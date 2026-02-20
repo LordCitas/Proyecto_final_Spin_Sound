@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Vinilo index{% endblock %}
+
+{% block body %}
+    <h1>Vinilo index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Titulo</th>
+                <th>Fecha_lanzamiento</th>
+                <th>Precio</th>
+                <th>Stock</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for vinilo in vinilos %}
+            <tr>
+                <td>{{ vinilo.id }}</td>
+                <td>{{ vinilo.titulo }}</td>
+                <td>{{ vinilo.fechaLanzamiento ? vinilo.fechaLanzamiento|date('Y-m-d') : '' }}</td>
+                <td>{{ vinilo.precio }}</td>
+                <td>{{ vinilo.stock }}</td>
+                <td>
+                    <a href="{{ path('app_vinilo_show', {'id': vinilo.id}) }}">show</a>
+                    <a href="{{ path('app_vinilo_edit', {'id': vinilo.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="6">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_vinilo_new') }}">Create new</a>
+{% endblock %}

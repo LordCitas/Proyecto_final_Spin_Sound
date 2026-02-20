@@ -11,6 +11,10 @@ security:
                 class: App\Entity\Usuario
                 property: email
 
+    # Define role hierarchy so ADMIN inherits ROLE_USER
+    role_hierarchy:
+        ROLE_ADMIN: [ROLE_USER]
+
     firewalls:
         dev:
             # Ensure dev tools and static assets are always allowed

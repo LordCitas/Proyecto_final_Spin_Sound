@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Vinilo{% endblock %}
+
+{% block body %}
+    <h1>Vinilo</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ vinilo.id }}</td>
+            </tr>
+            <tr>
+                <th>Titulo</th>
+                <td>{{ vinilo.titulo }}</td>
+            </tr>
+            <tr>
+                <th>Fecha_lanzamiento</th>
+                <td>{{ vinilo.fechaLanzamiento ? vinilo.fechaLanzamiento|date('Y-m-d') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Precio</th>
+                <td>{{ vinilo.precio }}</td>
+            </tr>
+            <tr>
+                <th>Stock</th>
+                <td>{{ vinilo.stock }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_vinilo_index') }}">back to list</a>
+
+    <a href="{{ path('app_vinilo_edit', {'id': vinilo.id}) }}">edit</a>
+
+    {{ include('vinilo/_delete_form.html.twig') }}
+{% endblock %}
