@@ -16,6 +16,10 @@ class Cliente extends Usuario
     #[ORM\OneToMany(targetEntity: Pedido::class, mappedBy: 'cliente', orphanRemoval: true)]
     private Collection $pedidos;
 
+    #[ORM\OneToOne(inversedBy: 'cliente', cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Carrito $carrito = null;
+
     public function __construct()
     {
         $this->pedidos = new ArrayCollection();
@@ -47,6 +51,18 @@ class Cliente extends Usuario
                 $pedido->setCliente(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getCarrito(): ?Carrito
+    {
+        return $this->carrito;
+    }
+
+    public function setCarrito(Carrito $carrito): static
+    {
+        $this->carrito = $carrito;
 
         return $this;
     }

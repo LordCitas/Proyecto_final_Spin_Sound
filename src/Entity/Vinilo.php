@@ -46,11 +46,18 @@ class Vinilo
     #[ORM\ManyToMany(targetEntity: Genero::class, mappedBy: 'genero_vinilo')]
     private Collection $generos;
 
+    /**
+     * @var Collection<int, DetalleCarrito>
+     */
+    #[ORM\OneToMany(targetEntity: DetalleCarrito::class, mappedBy: 'vinilo')]
+    private Collection $detalleCarritos;
+
     public function __construct()
     {
         $this->detallePedidos = new ArrayCollection();
         $this->artistas = new ArrayCollection();
         $this->generos = new ArrayCollection();
+        $this->detalleCarritos = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -185,6 +192,36 @@ class Vinilo
     {
         if ($this->generos->removeElement($genero)) {
             $genero->removeGeneroVinilo($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, DetalleCarrito>
+     */
+    public function getDetalleCarritos(): Collection
+    {
+        return $this->detalleCarritos;
+    }
+
+    public function addDetalleCarrito(DetalleCarrito $detalleCarrito): static
+    {
+        if (!$this->detalleCarritos->contains($detalleCarrito)) {
+            $this->detalleCarritos->add($detalleCarrito);
+            $detalleCarrito->setVinilo($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDetalleCarrito(DetalleCarrito $detalleCarrito): static
+    {
+        if ($this->detalleCarritos->removeElement($detalleCarrito)) {
+            // set the owning side to null (unless already changed)
+            if ($detalleCarrito->getVinilo() === $this) {
+                $detalleCarrito->setVinilo(null);
+            }
         }
 
         return $this;
