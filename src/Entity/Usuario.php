@@ -13,7 +13,8 @@ use Symfony\Component\Security\Core\User\UserInterface;
 #[ORM\DiscriminatorColumn(name: 'tipo', type: 'string')]
 #[ORM\DiscriminatorMap([
     'usuario' => Usuario::class,
-    'cliente' => Cliente::class
+    'cliente' => Cliente::class,
+    'admin' => Admin::class
 ])]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
 #[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]

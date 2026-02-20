@@ -1,13 +1,16 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
     <meta charset="UTF-8">
+    <title>{% block title %}Mi aplicación{% endblock %}</title>
     {% block javascripts %}
         {{ importmap('app') }}
     {% endblock %}
 </head>
 <body>
-<h1>¡Logrado! Symfony + React</h1>
-<div {{ react_component('Hello', { 'fullName': 'Programador' }) }}></div>
+{% block body %}
+    <h1>¡Logrado! Symfony + React</h1>
+    <div {{ react_component('Hello', { 'fullName': 'Programador' }) }}></div>
+{% endblock %}
 </body>
 </html>

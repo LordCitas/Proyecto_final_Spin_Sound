@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\ViniloRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -13,9 +15,6 @@ class Vinilo
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
-
-    #[ORM\Column(length: 255)]
-    private ?string $id_vinilo = null;
 
     #[ORM\Column(length: 255)]
     private ?string $titulo = null;
@@ -29,21 +28,34 @@ class Vinilo
     #[ORM\Column]
     private ?int $stock = null;
 
+    /**
+     * @var Collection<int, DetallePedido>
+     */
+    #[ORM\OneToMany(targetEntity: DetallePedido::class, mappedBy: 'vinilo')]
+    private Collection $detallePedidos;
+
+    /**
+     * @var Collection<int, Artista>
+     */
+    #[ORM\ManyToMany(targetEntity: Artista::class, mappedBy: 'vinilos')]
+    private Collection $artistas;
+
+    /**
+     * @var Collection<int, Genero>
+     */
+    #[ORM\ManyToMany(targetEntity: Genero::class, mappedBy: 'genero_vinilo')]
+    private Collection $generos;
+
+    public function __construct()
+    {
+        $this->detallePedidos = new ArrayCollection();
+        $this->artistas = new ArrayCollection();
+        $this->generos = new ArrayCollection();
+    }
+
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getIdVinilo(): ?string
-    {
-        return $this->id_vinilo;
-    }
-
-    public function setIdVinilo(string $id_vinilo): static
-    {
-        $this->id_vinilo = $id_vinilo;
-
-        return $this;
     }
 
     public function getTitulo(): ?string
@@ -90,6 +102,90 @@ class Vinilo
     public function setStock(int $stock): static
     {
         $this->stock = $stock;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, DetallePedido>
+     */
+    public function getDetallePedidos(): Collection
+    {
+        return $this->detallePedidos;
+    }
+
+    public function addDetallePedido(DetallePedido $detallePedido): static
+    {
+        if (!$this->detallePedidos->contains($detallePedido)) {
+            $this->detallePedidos->add($detallePedido);
+            $detallePedido->setPedido($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDetallePedido(DetallePedido $detallePedido): static
+    {
+        if ($this->detallePedidos->removeElement($detallePedido)) {
+            // set the owning side to null (unless already changed)
+            if ($detallePedido->getPedido() === $this) {
+                $detallePedido->setPedido(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Artista>
+     */
+    public function getArtistas(): Collection
+    {
+        return $this->artistas;
+    }
+
+    public function addArtista(Artista $artista): static
+    {
+        if (!$this->artistas->contains($artista)) {
+            $this->artistas->add($artista);
+            $artista->addVinilo($this);
+        }
+
+        return $this;
+    }
+
+    public function removeArtista(Artista $artista): static
+    {
+        if ($this->artistas->removeElement($artista)) {
+            $artista->removeVinilo($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Genero>
+     */
+    public function getGeneros(): Collection
+    {
+        return $this->generos;
+    }
+
+    public function addGenero(Genero $genero): static
+    {
+        if (!$this->generos->contains($genero)) {
+            $this->generos->add($genero);
+            $genero->addGeneroVinilo($this);
+        }
+
+        return $this;
+    }
+
+    public function removeGenero(Genero $genero): static
+    {
+        if ($this->generos->removeElement($genero)) {
+            $genero->removeGeneroVinilo($this);
+        }
 
         return $this;
     }
