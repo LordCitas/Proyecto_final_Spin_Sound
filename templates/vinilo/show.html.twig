@@ -1,54 +1,128 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Viniland - Product Detail{% endblock %}
+{% block title %}{{ discogsData.title ?? (vinilo ? vinilo.titulo : 'Detalle vinilo') }} - Spin&Sound{% endblock %}
 
 {% block javascripts %}
     {{ parent() }}
 {% endblock %}
 
 {% block body %}
+    {% set titulo = discogsData.title ?? (vinilo ? vinilo.titulo : '—') %}
+    {% set imagen = discogsData.images[0].uri ?? null %}
+    {% set artistaNombre = discogsData.artists[0].name ?? (vinilo and vinilo.artistas.first ? vinilo.artistas.first.nombre : '—') %}
+    {% set genero = discogsData.genres[0] ?? (vinilo and vinilo.generos.first ? vinilo.generos.first.nombre : '—') %}
+    {% set estilos = discogsData.styles ?? [] %}
+    {% set anio = discogsData.year ?? (vinilo ? vinilo.fechaLanzamiento|date('Y') : '—') %}
+    {% set pais = discogsData.country ?? '—' %}
+    {% set numDiscos = discogsData.format_quantity ?? 1 %}
+    {% set tracklist = discogsData.tracklist ?? [] %}
+    {% set notas = discogsData.notes ?? null %}
+
     <main class="container mx-auto flex-1 px-4 py-8">
         <div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:gap-16">
+
+            {# Columna izquierda: imagen #}
             <div>
                 <div class="mb-2 text-sm text-on-surface-muted-dark">
-                    <a class="hover:text-primary" href="#">Vinilos</a>
+                    <a class="hover:text-primary" href="{{ path('app_vinilo_index') }}">Vinilos</a>
                     <span>/</span>
-                    <span class="text-on-surface-dark">Kpop</span>
+                    <span class="text-on-surface-dark">{{ genero }}</span>
                 </div>
                 <div class="relative aspect-[1/1] w-full overflow-hidden rounded-xl shadow-lg bg-surface-dark">
-                    <div class="h-full w-full bg-cover bg-center [filter:drop-shadow(0_5px_10px_rgba(228,94,27,0.7))]" style="background-image: url('{{ asset('img/kpop-demon-hunters.webp') }}');"></div>
+                    {% if imagen %}
+                        <img src="{{ imagen }}" alt="{{ titulo }}" class="h-full w-full object-cover object-center"/>
+                    {% else %}
+                        <div class="h-full w-full bg-cover bg-center" style="background-image: url('{{ asset('img/kpop-demon-hunters.webp') }}');"></div>
+                    {% endif %}
                 </div>
+
+                {# Badge de Discogs si hay datos #}
+                {% if discogsData %}
+                    <div class="mt-3 flex items-center gap-2 text-xs text-on-surface-muted-dark">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-primary" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/>
+                        </svg>
+                        Datos obtenidos de <a href="https://www.discogs.com/release/{{ discogsData.id }}" target="_blank" class="text-primary hover:underline ml-1">Discogs</a>
+                    </div>
+                {% endif %}
             </div>
 
+            {# Columna derecha: info #}
             <div>
-                <h1 class="text-3xl font-bold tracking-tighter text-white sm:text-4xl">K-POP DEMON HUNTERS</h1>
-                <p class="mt-4 text-on-surface-muted-dark">KPop Demon Hunters, una película de Netflix de Sony Pictures Animation, sigue a las superestrellas del K-Pop Rumi, Mira y Zoey. Cuando no están llenando estadios, usan sus identidades secretas como cazadoras de demonios para proteger a sus fans de una amenaza sobrenatural omnipresente.</p>
+                <h1 class="text-3xl font-bold tracking-tighter text-white sm:text-4xl">{{ titulo }}</h1>
+                <p class="mt-1 text-lg text-primary font-semibold">{{ artistaNombre }}</p>
+
+                {% if notas %}
+                    <p class="mt-4 text-on-surface-muted-dark leading-relaxed text-sm">{{ notas|slice(0, 400) }}{% if notas|length > 400 %}…{% endif %}</p>
+                {% endif %}
+
                 <div class="mt-8">
-                    <p class="text-4xl font-bold text-[#e00000]">29,99 €</p>
+                    <p class="text-4xl font-bold text-primary">{{ vinilo ? vinilo.precio ~ ' €' : '—' }}</p>
+                    <p class="mt-1 text-sm text-on-surface-muted-dark">Stock: {{ vinilo ? vinilo.stock ~ ' unidades' : '—' }}</p>
                 </div>
+
                 <div class="mt-8 flex items-center gap-4">
-                    <button class="flex h-12 flex-1 items-center justify-center rounded-lg bg-[#e00000] px-6 font-bold text-white shadow-md transition-transform hover:scale-105">Añadir al carrito</button>
+                    <button class="flex h-12 flex-1 items-center justify-center rounded-lg px-6 font-bold text-white shadow-md transition-transform hover:scale-105" style="background-color: #e00000;">
+                        Añadir al carrito
+                    </button>
                     <button class="flex h-12 w-12 items-center justify-center rounded-lg border border-surface-dark bg-surface-dark text-on-surface-muted-dark hover:text-primary transition-colors">
                         <span class="material-symbols-outlined">favorite_border</span>
                     </button>
                 </div>
+
+                {# Detalles del producto #}
                 <div class="mt-10 border-t border-surface-dark pt-8">
-                    <h3 class="text-lg font-bold text-white">Detalles del producto</h3>
-                    <dl class="mt-4 grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+                    <h3 class="text-lg font-bold text-white mb-4">Detalles del producto</h3>
+                    <dl class="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
                         <dt class="text-on-surface-muted-dark">Artista</dt>
-                        <dd class="text-on-surface-dark">Huntrix</dd>
+                        <dd class="text-on-surface-dark">{{ artistaNombre }}</dd>
+
                         <dt class="text-on-surface-muted-dark">Título</dt>
-                        <dd class="text-on-surface-dark">K-pop Demon Hunters</dd>
+                        <dd class="text-on-surface-dark">{{ titulo }}</dd>
+
                         <dt class="text-on-surface-muted-dark">Género</dt>
-                        <dd class="text-on-surface-dark">K-pop</dd>
+                        <dd class="text-on-surface-dark">
+                            {{ genero }}
+                            {% if estilos %}
+                                <span class="text-on-surface-muted-dark"> · {{ estilos|join(', ') }}</span>
+                            {% endif %}
+                        </dd>
+
+                        <dt class="text-on-surface-muted-dark">Año</dt>
+                        <dd class="text-on-surface-dark">{{ anio }}</dd>
+
+                        {% if pais != '—' %}
+                            <dt class="text-on-surface-muted-dark">País</dt>
+                            <dd class="text-on-surface-dark">{{ pais }}</dd>
+                        {% endif %}
+
                         <dt class="text-on-surface-muted-dark">Formato</dt>
                         <dd class="text-on-surface-dark">Vinilo</dd>
-                        <dt class="text-on-surface-muted-dark">Lanzamiento</dt>
-                        <dd class="text-on-surface-dark">2025</dd>
+
                         <dt class="text-on-surface-muted-dark">Discos</dt>
-                        <dd class="text-on-surface-dark">1</dd>
+                        <dd class="text-on-surface-dark">{{ numDiscos }}</dd>
                     </dl>
                 </div>
+
+                {# Tracklist de Discogs #}
+                {% if tracklist is not empty %}
+                    <div class="mt-8 border-t border-surface-dark pt-8">
+                        <h3 class="text-lg font-bold text-white mb-4">Lista de canciones</h3>
+                        <ol class="space-y-2">
+                            {% for track in tracklist %}
+                                {% if track.type_ == 'track' %}
+                                    <li class="flex items-center justify-between text-sm gap-4">
+                                        <span class="text-on-surface-muted-dark w-6 shrink-0">{{ track.position }}</span>
+                                        <span class="text-on-surface-dark flex-1">{{ track.title }}</span>
+                                        {% if track.duration %}
+                                            <span class="text-on-surface-muted-dark shrink-0">{{ track.duration }}</span>
+                                        {% endif %}
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                        </ol>
+                    </div>
+                {% endif %}
             </div>
         </div>
     </main>

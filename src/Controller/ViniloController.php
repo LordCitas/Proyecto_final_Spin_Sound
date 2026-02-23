@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Vinilo;
 use App\Form\ViniloType;
 use App\Repository\ViniloRepository;
+use App\Service\DiscogsService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -43,10 +44,17 @@ final class ViniloController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_vinilo_show', requirements: ['id' => '\\d+'], methods: ['GET'])]
-    public function show(Vinilo $vinilo): Response
+    public function show(Vinilo $vinilo, DiscogsService $discogs): Response
     {
+        // Buscar en Discogs por el primer artista y el título del vinilo
+        $artista = $vinilo->getArtistas()->first();
+        $nombreArtista = $artista ? $artista->getNombre() : '';
+
+        $discogsData = $discogs->getReleaseData($nombreArtista, $vinilo->getTitulo());
+
         return $this->render('vinilo/show.html.twig', [
-            'vinilo' => $vinilo,
+            'vinilo'      => $vinilo,
+            'discogsData' => $discogsData,
         ]);
     }
 
@@ -82,7 +90,9 @@ final class ViniloController extends AbstractController
     #[Route('/demo', name: 'app_vinilo_demo', methods: ['GET'])]
     public function demo(): Response
     {
-        // Render template without requiring DB access — useful for testing the view.
-        return $this->render('vinilo/show.html.twig');
+        return $this->render('vinilo/show.html.twig', [
+            'vinilo'      => null,
+            'discogsData' => null,
+        ]);
     }
 }
