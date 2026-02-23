@@ -4,6 +4,54 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{% block title %}Mi aplicación{% endblock %}</title>
+
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin href="https://fonts.gstatic.com/" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+
+    <script>document.documentElement.classList.add('dark');</script>
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#cf6329",
+              secondary: "#f88931",
+              rojo: "#590c2c",
+              accent: "#f88913",
+              "background-light": "#cca983",
+              "background-dark": "#0b0f13",
+              "surface-light": "#f8f6f6",
+              "surface-dark": "#1a1f23",
+              "on-surface-light": "#0b0f13",
+              "on-surface-dark": "#f8f6f6",
+              "on-surface-muted-light": "#5c5f62",
+              "on-surface-muted-dark": "#a9aeb2",
+              "subtle-light": "#e5e7eb",
+              "subtle-dark": "#374151",
+              "text-light": "#0b0f13",
+              "text-dark": "#f8f6f6",
+              "text-muted-light": "#6b7280",
+              "text-muted-dark": "#cca983",
+            },
+            fontFamily: {
+              display: ["Space Grotesk", "sans-serif"],
+              sans: ["Space Grotesk", "sans-serif"],
+            },
+            borderRadius: {
+              DEFAULT: "0.5rem",
+              lg: "0.75rem",
+              xl: "1rem",
+              full: "9999px",
+            },
+          },
+        },
+      };
+    </script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
     <style>
         /* Forzar fondo negro y texto blanco por defecto */
         html, body { background-color: #000 !important; color: #fff !important; }
@@ -18,7 +66,21 @@
         .text-on-surface-light, .text-text-light {
             color: #fff !important;
         }
+        .material-symbols-outlined {
+            font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+        }
+        .form-select {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23cf6329' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 0.5rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+            padding-right: 2.5rem;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+        }
     </style>
+
     {% block javascripts %}
         {# Los templates pueden añadir scripts/estilos; por defecto se incluye app via importmap #}
         {{ importmap('app') }}
