@@ -16,6 +16,17 @@ class ViniloRepository extends ServiceEntityRepository
         parent::__construct($registry, Vinilo::class);
     }
 
+    public function findBySearch(string $query): array
+    {
+        return $this->createQueryBuilder('v')
+            ->leftJoin('v.artistas', 'a')
+            ->where('v.titulo LIKE :q OR a.nombre LIKE :q')
+            ->setParameter('q', '%' . $query . '%')
+            ->getQuery()
+            ->getResult();
+    }
+
+
     //    /**
     //     * @return Vinilo[] Returns an array of Vinilo objects
     //     */

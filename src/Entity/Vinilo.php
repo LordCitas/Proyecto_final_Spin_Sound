@@ -28,6 +28,9 @@ class Vinilo
     #[ORM\Column]
     private ?int $stock = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?int $discogs_id = null;
+
     /**
      * @var Collection<int, DetallePedido>
      */
@@ -109,6 +112,18 @@ class Vinilo
     public function setStock(int $stock): static
     {
         $this->stock = $stock;
+
+        return $this;
+    }
+
+    public function getDiscogsId(): ?int
+    {
+        return $this->discogs_id;
+    }
+
+    public function setDiscogsId(?int $discogs_id): static
+    {
+        $this->discogs_id = $discogs_id;
 
         return $this;
     }

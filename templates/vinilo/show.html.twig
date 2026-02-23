@@ -1,22 +1,22 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ discogsData.title ?? (vinilo ? vinilo.titulo : 'Detalle vinilo') }} - Spin&Sound{% endblock %}
+{% block title %}{{ vinilo.titulo }} - Spin&Sound{% endblock %}
 
 {% block javascripts %}
     {{ parent() }}
 {% endblock %}
 
 {% block body %}
-    {% set titulo = discogsData.title ?? (vinilo ? vinilo.titulo : '—') %}
-    {% set imagen = discogsData.images[0].uri ?? null %}
-    {% set artistaNombre = discogsData.artists[0].name ?? (vinilo and vinilo.artistas.first ? vinilo.artistas.first.nombre : '—') %}
-    {% set genero = discogsData.genres[0] ?? (vinilo and vinilo.generos.first ? vinilo.generos.first.nombre : '—') %}
-    {% set estilos = discogsData.styles ?? [] %}
-    {% set anio = discogsData.year ?? (vinilo ? vinilo.fechaLanzamiento|date('Y') : '—') %}
-    {% set pais = discogsData.country ?? '—' %}
-    {% set numDiscos = discogsData.format_quantity ?? 1 %}
-    {% set tracklist = discogsData.tracklist ?? [] %}
-    {% set notas = discogsData.notes ?? null %}
+    {% set titulo = vinilo.titulo ?? '—' %}
+    {% set imagen = null %}
+    {% set artistaNombre = vinilo.artistas.first ? vinilo.artistas.first.nombre : '—' %}
+    {% set genero = vinilo.generos.first ? vinilo.generos.first.nombre : '—' %}
+    {% set estilos = [] %}
+    {% set notas = null %}
+    {% set anio = vinilo.fechaLanzamiento ? vinilo.fechaLanzamiento|date('Y') : '—' %}
+    {% set pais = '—' %}
+    {% set numDiscos = 1 %}
+
 
     <main class="container mx-auto flex-1 px-4 py-8">
         <div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:gap-16">
@@ -29,22 +29,20 @@
                     <span class="text-on-surface-dark">{{ genero }}</span>
                 </div>
                 <div class="relative aspect-[1/1] w-full overflow-hidden rounded-xl shadow-lg bg-surface-dark">
-                    {% if imagen %}
-                        <img src="{{ imagen }}" alt="{{ titulo }}" class="h-full w-full object-cover object-center"/>
-                    {% else %}
-                        <div class="h-full w-full bg-cover bg-center" style="background-image: url('{{ asset('img/kpop-demon-hunters.webp') }}');"></div>
-                    {% endif %}
+                    <div class="h-full w-full bg-cover bg-center" style="background-image: url('{{ asset('img/kpop-demon-hunters.webp') }}');"></div>
                 </div>
 
+
                 {# Badge de Discogs si hay datos #}
-                {% if discogsData %}
+                {% if vinilo.discogsId %}
                     <div class="mt-3 flex items-center gap-2 text-xs text-on-surface-muted-dark">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-primary" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/>
                         </svg>
-                        Datos obtenidos de <a href="https://www.discogs.com/release/{{ discogsData.id }}" target="_blank" class="text-primary hover:underline ml-1">Discogs</a>
+                        Datos de <a href="https://www.discogs.com/release/{{ vinilo.discogsId }}" target="_blank" class="text-primary hover:underline ml-1">Discogs</a>
                     </div>
                 {% endif %}
+
             </div>
 
             {# Columna derecha: info #}
@@ -104,25 +102,7 @@
                     </dl>
                 </div>
 
-                {# Tracklist de Discogs #}
-                {% if tracklist is not empty %}
-                    <div class="mt-8 border-t border-surface-dark pt-8">
-                        <h3 class="text-lg font-bold text-white mb-4">Lista de canciones</h3>
-                        <ol class="space-y-2">
-                            {% for track in tracklist %}
-                                {% if track.type_ == 'track' %}
-                                    <li class="flex items-center justify-between text-sm gap-4">
-                                        <span class="text-on-surface-muted-dark w-6 shrink-0">{{ track.position }}</span>
-                                        <span class="text-on-surface-dark flex-1">{{ track.title }}</span>
-                                        {% if track.duration %}
-                                            <span class="text-on-surface-muted-dark shrink-0">{{ track.duration }}</span>
-                                        {% endif %}
-                                    </li>
-                                {% endif %}
-                            {% endfor %}
-                        </ol>
-                    </div>
-                {% endif %}
+                {# Tracklist desactivado - tracklist no se pasa desde el controlador #}
             </div>
         </div>
     </main>
