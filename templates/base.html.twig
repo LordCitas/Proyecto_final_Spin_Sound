@@ -18,6 +18,38 @@
         .text-on-surface-light, .text-text-light {
             color: #fff !important;
         }
+        /* Estilos específicos para el input de búsqueda */
+        /* Transición y 'ring' en hover/focus con color #590c2c */
+        #global_search {
+            transition: box-shadow 0.18s ease, background-color 0.18s ease, color 0.18s ease;
+            -webkit-transition: box-shadow 0.18s ease, background-color 0.18s ease, color 0.18s ease;
+        }
+        /* Hover: cambiar fondo a rojo #590c2c y mantener texto legible */
+        #global_search:hover {
+            background-color: #590c2c !important;
+            color: #fff !important;
+            box-shadow: 0 0 0 4px rgba(89, 12, 44, 0.14) !important;
+        }
+        /* Focus: fondo rojo ligeramente más oscuro e indicador más intenso */
+        #global_search:focus {
+            background-color: #4f0a26 !important; /* versión ligeramente más oscura */
+            color: #fff !important;
+            box-shadow: 0 0 0 6px rgba(89, 12, 44, 0.28) !important;
+            outline: none !important;
+            border-radius: 9999px; /* mantener forma redondeada */
+        }
+        /* Estilos específicos para los enlaces del header y footer: hover/focus en rojo #590c2c */
+        header a:hover,
+        header a:focus,
+        header nav a:hover,
+        header nav a:focus,
+        #mobile-menu a:hover,
+        #mobile-menu a:focus,
+        footer a:hover,
+        footer a:focus {
+            color: #e00000 !important;
+            transition: color 0.18s ease;
+        }
     </style>
     {% block javascripts %}
         {# Los templates pueden añadir scripts/estilos; por defecto se incluye app via importmap #}
