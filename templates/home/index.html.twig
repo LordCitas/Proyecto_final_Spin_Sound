@@ -3,44 +3,7 @@
 {% block title %}Spin&Sound{% endblock %}
 
 {% block javascripts %}
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link href="https://fonts.googleapis.com" rel="preconnect" />
-    <link crossorigin href="https://fonts.gstatic.com/" rel="preconnect" />
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&amp;display=swap" rel="stylesheet" />
-    <script>document.documentElement.classList.add('dark');</script>
-    <script>
-      tailwind.config = {
-        darkMode: "class",
-        theme: {
-          extend: {
-            colors: {
-              primary: "#cf6329",
-              secondary: "#f88931",
-              rojo: "#590c2c",
-              "background-light": "#cca983",
-              "background-dark": "#0b0f13",
-              "surface-light": "#f8f6f6",
-              "surface-dark": "#1a1f23",
-              "on-surface-light": "#0b0f13",
-              "on-surface-dark": "#f8f6f6",
-              "on-surface-muted-light": "#5c5f62",
-              "on-surface-muted-dark": "#a9aeb2",
-            },
-            fontFamily: {
-              display: ["Space Grotesk", "sans-serif"],
-            },
-            borderRadius: {
-              DEFAULT: "0.5rem",
-              lg: "0.75rem",
-              xl: "1rem",
-              full: "9999px",
-            },
-          },
-        },
-      };
-    </script>
-    <script src="https://cdn.tailwindcss.com?plugins=container-queries"></script>
-    {{ importmap('app') }}
+    {{ parent() }}
 {% endblock %}
 
 {% block body %}

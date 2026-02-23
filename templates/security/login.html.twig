@@ -3,34 +3,7 @@
 {% block title %}Viniland | Sign In{% endblock %}
 
 {% block javascripts %}
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link crossorigin href="https://fonts.gstatic.com/" rel="preconnect" />
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700;900&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
-
-    <script src="https://cdn.tailwindcss.com?plugins=container-queries"></script>
-    <script>
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        primary: "#cf6329",
-                        secondary: "#f88931",
-                        "background-light": "#cca983",
-                        "background-dark": "#0b0f13",
-                        "surface-dark": "#1a1f23",
-                    },
-                    fontFamily: {
-                        sans: ["Space Grotesk", "sans-serif"],
-                    },
-                },
-            },
-        };
-        // Forzamos el modo oscuro para que coincida con tu diseño
-        document.documentElement.classList.add('dark');
-    </script>
+    {{ parent() }}
 {% endblock %}
 
 {% block body %}
