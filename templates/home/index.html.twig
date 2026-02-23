@@ -8,7 +8,6 @@
     <link crossorigin href="https://fonts.gstatic.com/" rel="preconnect" />
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&amp;display=swap" rel="stylesheet" />
     <script>document.documentElement.classList.add('dark');</script>
-    <script src="https://cdn.tailwindcss.com?plugins=container-queries"></script>
     <script>
       tailwind.config = {
         darkMode: "class",
@@ -17,6 +16,7 @@
             colors: {
               primary: "#cf6329",
               secondary: "#f88931",
+              rojo: "#590c2c",
               "background-light": "#cca983",
               "background-dark": "#0b0f13",
               "surface-light": "#f8f6f6",
@@ -39,6 +39,7 @@
         },
       };
     </script>
+    <script src="https://cdn.tailwindcss.com?plugins=container-queries"></script>
     {{ importmap('app') }}
 {% endblock %}
 
