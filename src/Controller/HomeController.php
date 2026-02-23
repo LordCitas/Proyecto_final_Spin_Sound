@@ -43,4 +43,16 @@ class HomeController extends AbstractController
             'ofertas' => $ofertas,
         ]);
     }
+
+    #[Route('/sobre-nosotros', name: 'app_sobre_nosotros')]
+    public function sobreNosotros(): Response
+    {
+        return $this->render('home/sobre_nosotros.html.twig');
+    }
+
+    #[Route('/contacto', name: 'app_contacto')]
+    public function contacto(): Response
+    {
+        return $this->render('home/contacto.html.twig');
+    }
 }

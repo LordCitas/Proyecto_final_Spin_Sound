@@ -128,12 +128,12 @@
       <div class="flex items-center gap-8">
         <a class="flex items-center gap-3" href="{{ path('app_home') }}">
           {# Logo real en public/img (encontrado: public/img/logo-spin-sound-circular.png) #}
-          <img src="{{ asset('img/logo-spin-sound-circular.png') }}" alt="Viniland logo" class="h-10 w-auto object-contain" />
+          <img src="{{ asset('img/logo-spin-sound-circular.png') }}" alt="Viniland logo" class="h-20 w-auto object-contain" />
         </a>
         <nav class="hidden lg:flex items-center gap-6">
           <a class="text-sm font-medium hover:text-primary transition-colors" href="{{ path('app_vinilo_index') }}">Vinilos</a>
-          <a class="text-sm font-medium hover:text-primary transition-colors" href="#">Sobre nosotros</a>
-          <a class="text-sm font-medium hover:text-primary transition-colors" href="#">Contacto</a>
+          <a class="text-sm font-medium hover:text-primary transition-colors" href="{{ path('app_sobre_nosotros') }}">Sobre nosotros</a>
+          <a class="text-sm font-medium hover:text-primary transition-colors" href="{{ path('app_contacto') }}">Contacto</a>
         </nav>
 
         {# Botón hamburguesa para pantallas pequeñas #}
@@ -174,8 +174,8 @@
    <nav id="mobile-menu" class="hidden lg:hidden border-t bg-surface-light dark:bg-surface-dark">
      <div class="container mx-auto px-4 py-3 flex flex-col gap-2">
        <a class="text-sm font-medium hover:text-primary transition-colors" href="{{ path('app_vinilo_index') }}">Vinilos</a>
-       <a class="text-sm font-medium hover:text-primary transition-colors" href="#">Sobre nosotros</a>
-       <a class="text-sm font-medium hover:text-primary transition-colors" href="#">Contacto</a>
+       <a class="text-sm font-medium hover:text-primary transition-colors" href="{{ path('app_sobre_nosotros') }}">Sobre nosotros</a>
+       <a class="text-sm font-medium hover:text-primary transition-colors" href="{{ path('app_contacto') }}">Contacto</a>
      </div>
    </nav>
  </header>
