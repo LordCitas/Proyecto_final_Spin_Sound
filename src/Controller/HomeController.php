@@ -24,14 +24,23 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use App\Repository\ViniloRepository;
 
 class HomeController extends AbstractController
 {
     #[Route('/', name: 'app_home')]
-    public function index(): Response
+    public function index(ViniloRepository $viniloRepository): Response
     {
+        // Obtener las últimas 6 novedades por fecha de lanzamiento
+        $novedades = $viniloRepository->findBy([], ['fecha_lanzamiento' => 'DESC'], 6);
+
+        // Obtener 4 ofertas (los más baratos como ejemplo)
+        $ofertas = $viniloRepository->findBy([], ['precio' => 'ASC'], 4);
+
         return $this->render('home/index.html.twig', [
             'controller_name' => 'HomeController',
+            'novedades' => $novedades,
+            'ofertas' => $ofertas,
         ]);
     }
 }
