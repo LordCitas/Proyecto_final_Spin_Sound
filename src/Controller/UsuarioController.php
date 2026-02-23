@@ -17,8 +17,29 @@ final class UsuarioController extends AbstractController
     #[Route(name: 'app_usuario_index', methods: ['GET'])]
     public function index(UsuarioRepository $usuarioRepository): Response
     {
+        // Require authentication
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+
+        $current = $this->getUser();
+
+        // If the security user is the Usuario entity, use it directly
+        if ($current instanceof Usuario) {
+            $user = $current;
+        } else {
+            // Otherwise try to resolve the Usuario entity by the user identifier (usually email)
+            $identifier = method_exists($current, 'getUserIdentifier') ? $current->getUserIdentifier() : (method_exists($current, 'getUsername') ? $current->getUsername() : null);
+            if (!$identifier) {
+                throw $this->createNotFoundException('No se pudo determinar el identificador del usuario autenticado.');
+            }
+
+            $user = $usuarioRepository->findOneBy(['email' => $identifier]);
+            if (!$user) {
+                throw $this->createNotFoundException('Usuario no encontrado.');
+            }
+        }
+
         return $this->render('usuario/index.html.twig', [
-            'usuarios' => $usuarioRepository->findAll(),
+            'usuario' => $user,
         ]);
     }
 

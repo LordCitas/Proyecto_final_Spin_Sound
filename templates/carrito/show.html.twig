@@ -50,154 +50,110 @@
 {% endblock %}
 
 {% block body %}
-<div class="flex min-h-screen flex-col">
-    <header class="sticky top-0 z-10 border-b border-subtle-light bg-surface-light/80 backdrop-blur-sm dark:border-subtle-dark dark:bg-surface-dark/80">
-        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div class="flex h-16 items-center justify-between">
-                <div class="flex items-center gap-4">
-                    <div class="flex items-center gap-2 text-primary">
-                        <svg class="h-6 w-6" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-                            <circle cx="12" cy="12" r="10"></circle>
-                            <circle cx="12" cy="12" r="4"></circle>
-                            <line x1="12" x2="12" y1="2" y2="4"></line>
-                            <line x1="12" x2="12" y1="20" y2="22"></line>
-                            <line x1="2" x2="4" y1="12" y2="12"></line>
-                            <line x1="20" x2="22" y1="12" y2="12"></line>
-                        </svg>
-                        <h1 class="text-xl font-bold">Viniland</h1>
-                    </div>
-                    <nav class="hidden items-center gap-6 md:flex">
-                        <a class="text-sm font-medium text-text-light transition-colors hover:text-primary dark:text-text-dark dark:hover:text-primary" href="#">Novedades</a>
-                        <a class="text-sm font-medium text-text-light transition-colors hover:text-primary dark:text-text-dark dark:hover:text-primary" href="#">Vinilos</a>
-                        <a class="text-sm font-medium text-text-light transition-colors hover:text-primary dark:text-text-dark dark:hover:text-primary" href="#">CDs</a>
-                        <a class="text-sm font-medium text-text-light transition-colors hover:text-primary dark:text-text-dark dark:hover:text-primary" href="#">Merchandising</a>
-                        <a class="text-sm font-medium text-text-light transition-colors hover:text-primary dark:text-text-dark dark:hover:text-primary" href="#">Ofertas</a>
-                    </nav>
-                </div>
-                <div class="flex items-center gap-4">
-                    <button class="rounded-full p-2 text-text-muted-light transition-colors hover:bg-subtle-light hover:text-text-light dark:text-text-muted-dark dark:hover:bg-subtle-dark dark:hover:text-text-dark">
-                        <span class="material-symbols-outlined"> search </span>
-                        <span class="sr-only">Buscar</span>
-                    </button>
-                    <button class="relative rounded-full p-2 text-text-muted-light transition-colors hover:bg-subtle-light hover:text-text-light dark:text-text-muted-dark dark:hover:bg-subtle-dark dark:hover:text-text-dark">
-                        <span class="material-symbols-outlined"> shopping_cart </span>
-                        <span class="absolute right-0 top-0 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-xs font-bold text-white">3</span>
-                        <span class="sr-only">Carrito</span>
-                    </button>
-                    <button class="rounded-full">
-                        <img alt="Avatar de usuario" class="h-9 w-9 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCr5x-dkaH3uTpUM1dcqgBOmctHLsBUq0BYlTVJn5XipdGZILX26XxbQL6kg0bSay0L4ZqmqTwBd4ph3osFK_hM6rf8p0D5N_5GIaPLcYjJCUpcF0VSUzL689RqTyLifmK3JZe26VSsYZ06XKrdP_hgE0UcdAe7EXjA4Ll4X8U7KUOuouhf6WEdY9gUvQGoewix3dkTrxZbQSkH-LItuljaqkYcppkly_Zq68df2gmUpz91cUMP--hDva6XQZlUk62u8IN-kGQVUlai"/>
-                        <span class="sr-only">Perfil de usuario</span>
-                    </button>
-                </div>
+<main class="flex-grow">
+    <div class="mx-auto max-w-4xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
+        <div class="space-y-8">
+            <div>
+                <nav aria-label="Breadcrumb">
+                    <ol class="flex items-center gap-1.5 text-sm">
+                        <li>
+                            <a class="text-text-muted-light transition-colors hover:text-primary dark:text-text-muted-dark dark:hover:text-primary" href="#">Inicio</a>
+                        </li>
+                        <li><span class="text-text-muted-light dark:text-text-muted-dark">/</span></li>
+                        <li>
+                            <span class="font-medium text-text-light dark:text-text-dark">Carrito</span>
+                        </li>
+                    </ol>
+                </nav>
+                <h2 class="mt-4 text-3xl font-bold tracking-tight text-text-light dark:text-text-dark sm:text-4xl">Tu Carrito</h2>
             </div>
-        </div>
-    </header>
 
-    <main class="flex-grow">
-        <div class="mx-auto max-w-4xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
-            <div class="space-y-8">
-                <div>
-                    <nav aria-label="Breadcrumb">
-                        <ol class="flex items-center gap-1.5 text-sm">
-                            <li>
-                                <a class="text-text-muted-light transition-colors hover:text-primary dark:text-text-muted-dark dark:hover:text-primary" href="#">Inicio</a>
-                            </li>
-                            <li><span class="text-text-muted-light dark:text-text-muted-dark">/</span></li>
-                            <li>
-                                <span class="font-medium text-text-light dark:text-text-dark">Carrito</span>
-                            </li>
-                        </ol>
-                    </nav>
-                    <h2 class="mt-4 text-3xl font-bold tracking-tight text-text-light dark:text-text-dark sm:text-4xl">Tu Carrito</h2>
-                </div>
+            <div class="grid grid-cols-1 gap-12 lg:grid-cols-3 lg:items-start">
+                <div class="space-y-6 lg:col-span-2">
+                    <div class="divide-y divide-subtle-light rounded-lg border border-subtle-light bg-surface-light dark:divide-subtle-dark dark:border-subtle-dark dark:bg-surface-dark">
 
-                <div class="grid grid-cols-1 gap-12 lg:grid-cols-3 lg:items-start">
-                    <div class="space-y-6 lg:col-span-2">
-                        <div class="divide-y divide-subtle-light rounded-lg border border-subtle-light bg-surface-light dark:divide-subtle-dark dark:border-subtle-dark dark:bg-surface-dark">
-
-                            <div class="flex items-center gap-4 p-4">
-                                <img alt="Portada del vinilo The Sound of Silence" class="h-20 w-20 flex-shrink-0 rounded-lg object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCU02dQ97xE9x9-DPnnDCH_H1rBPP4gPm8POMYfTtV43QXSH7NU133fFjVDxpVKi4v-C-dWuEXKgm989tssvCXlE8Iqv0xKFNXzGQjDRp2v7nTbzXLVMIWjScPEqZoFdaNTdLwSjYsTxKhC0_X5wmLS55IX6ZMoNIrwwat1CWI5YgEoyoa_4w2bcZT7LvlJZR0cMaatuWHLV5Xl206_WvmHfcDE7t6UaJ2bvkRDb7OaEbVuZY4W3iySos-6YXXTaVs0U21uflgGxlU2"/>
-                                <div class="flex-1">
-                                    <h3 class="font-semibold text-text-light dark:text-text-dark">The Sound of Silence</h3>
-                                    <p class="text-sm text-text-muted-light dark:text-text-muted-dark">Simon &amp; Garfunkel</p>
-                                    <p class="mt-1 text-lg font-bold text-primary">$19.99</p>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <button class="flex h-8 w-8 items-center justify-center rounded-full border border-subtle-light text-text-muted-light transition-colors hover:bg-subtle-light hover:text-text-light dark:border-subtle-dark dark:text-text-muted-dark dark:hover:bg-subtle-dark dark:hover:text-text-dark">-</button>
-                                    <input aria-label="Cantidad del producto The Sound of Silence" class="w-10 border-0 bg-transparent text-center font-medium focus:ring-0" type="number" value="1"/>
-                                    <button class="flex h-8 w-8 items-center justify-center rounded-full border border-subtle-light text-text-muted-light transition-colors hover:bg-subtle-light hover:text-text-light dark:border-subtle-dark dark:text-text-muted-dark dark:hover:bg-subtle-dark dark:hover:text-text-dark">+</button>
-                                </div>
-                                <button class="p-1 text-text-muted-light transition-colors hover:text-primary dark:text-text-muted-dark dark:hover:text-primary">
-                                    <span class="material-symbols-outlined"> delete </span>
-                                    <span class="sr-only">Eliminar</span>
-                                </button>
+                        <div class="flex items-center gap-4 p-4">
+                            <img alt="Portada del vinilo The Sound of Silence" class="h-20 w-20 flex-shrink-0 rounded-lg object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCU02dQ97xE9x9-DPnnDCH_H1rBPP4gPm8POMYfTtV43QXSH7NU133fFjVDxpVKi4v-C-dWuEXKgm989tssvCXlE8Iqv0xKFNXzGQjDRp2v7nTbzXLVMIWjScPEqZoFdaNTdLwSjYsTxKhC0_X5wmLS55IX6ZMoNIrwwat1CWI5YgEoyoa_4w2bcZT7LvlJZR0cMaatuWHLV5Xl206_WvmHfcDE7t6UaJ2bvkRDb7OaEbVuZY4W3iySos-6YXXTaVs0U21uflgGxlU2"/>
+                            <div class="flex-1">
+                                <h3 class="font-semibold text-text-light dark:text-text-dark">The Sound of Silence</h3>
+                                <p class="text-sm text-text-muted-light dark:text-text-muted-dark">Simon &amp; Garfunkel</p>
+                                <p class="mt-1 text-lg font-bold text-primary">$19.99</p>
                             </div>
-
-                            <div class="flex items-center gap-4 p-4">
-                                <img alt="Portada del vinilo Abbey Road" class="h-20 w-20 flex-shrink-0 rounded-lg object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHxqY-uOJsF9rEMNjw5ASJcGwA_bi_Cgt9LoDBK5HIcMkMpEvcMZU5jJzrIJgm58D90IpX8wxA94A8h-XX1qWdbyJoRvDhN6nD87J3AXqqGfcQ0CQnr3TV5yQVNiUdPKd1ikn4ZVF9VHAAq9B6PY5c0HUPOBWwcz4w5coq_C-JaBkU5tKMzZPbMbnU-PNqxkJtKYvoCl1fd3qJ9DqVpGN86jN6JK2xhGoqEQDwkWY-GMpAMeZ2H6_2N_O_ITEmhwYpGGfHN29-1Zz5"/>
-                                <div class="flex-1">
-                                    <h3 class="font-semibold text-text-light dark:text-text-dark">Abbey Road</h3>
-                                    <p class="text-sm text-text-muted-light dark:text-text-muted-dark">The Beatles</p>
-                                    <p class="mt-1 text-lg font-bold text-primary">$24.99</p>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <button class="flex h-8 w-8 items-center justify-center rounded-full border border-subtle-light text-text-muted-light transition-colors hover:bg-subtle-light hover:text-text-light dark:border-subtle-dark dark:text-text-muted-dark dark:hover:bg-subtle-dark dark:hover:text-text-dark">-</button>
-                                    <input aria-label="Cantidad del producto Abbey Road" class="w-10 border-0 bg-transparent text-center font-medium focus:ring-0" type="number" value="1"/>
-                                    <button class="flex h-8 w-8 items-center justify-center rounded-full border border-subtle-light text-text-muted-light transition-colors hover:bg-subtle-light hover:text-text-light dark:border-subtle-dark dark:text-text-muted-dark dark:hover:bg-subtle-dark dark:hover:text-text-dark">+</button>
-                                </div>
-                                <button class="p-1 text-text-muted-light transition-colors hover:text-primary dark:text-text-muted-dark dark:hover:text-primary">
-                                    <span class="material-symbols-outlined"> delete </span>
-                                    <span class="sr-only">Eliminar</span>
-                                </button>
+                            <div class="flex items-center gap-2">
+                                <button class="flex h-8 w-8 items-center justify-center rounded-full border border-subtle-light text-text-muted-light transition-colors hover:bg-subtle-light hover:text-text-light dark:border-subtle-dark dark:text-text-muted-dark dark:hover:bg-subtle-dark dark:hover:text-text-dark">-</button>
+                                <input aria-label="Cantidad del producto The Sound of Silence" class="w-10 border-0 bg-transparent text-center font-medium focus:ring-0" type="number" value="1"/>
+                                <button class="flex h-8 w-8 items-center justify-center rounded-full border border-subtle-light text-text-muted-light transition-colors hover:bg-subtle-light hover:text-text-light dark:border-subtle-dark dark:text-text-muted-dark dark:hover:bg-subtle-dark dark:hover:text-text-dark">+</button>
                             </div>
-
-                            <div class="flex items-center gap-4 p-4">
-                                <img alt="Portada del vinilo Thriller" class="h-20 w-20 flex-shrink-0 rounded-lg object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAq55MzuJ00RcfY32SLxGulsTzREnASlZqg66wy5UB1QgnHclKm7QpZwwEr6SC5xt5wMWVVW0YJ_yvm3lw_2jcFxGKkFcP5k3Dg_ibuEPnba8U1GbWLeLUs017DF7Sr8xvoNEE0Z4_n9NXeh0_-AyBd7zu7oIvTP8gH6zkJWfcy4OnX4KdBbmMaXUdieKKeoF1nzG8mfIKmQ1UFIoOgeM2ljYtEublMCx8CuTMVJwpYNMRwaLXsC9ywvRVO4SRsLzsSNlruNfDlgeP_"/>
-                                <div class="flex-1">
-                                    <h3 class="font-semibold text-text-light dark:text-text-dark">Thriller</h3>
-                                    <p class="text-sm text-text-muted-light dark:text-text-muted-dark">Michael Jackson</p>
-                                    <p class="mt-1 text-lg font-bold text-primary">$14.99</p>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <button class="flex h-8 w-8 items-center justify-center rounded-full border border-subtle-light text-text-muted-light transition-colors hover:bg-subtle-light hover:text-text-light dark:border-subtle-dark dark:text-text-muted-dark dark:hover:bg-subtle-dark dark:hover:text-text-dark">-</button>
-                                    <input aria-label="Cantidad del producto Thriller" class="w-10 border-0 bg-transparent text-center font-medium focus:ring-0" type="number" value="1"/>
-                                    <button class="flex h-8 w-8 items-center justify-center rounded-full border border-subtle-light text-text-muted-light transition-colors hover:bg-subtle-light hover:text-text-light dark:border-subtle-dark dark:text-text-muted-dark dark:hover:bg-subtle-dark dark:hover:text-text-dark">+</button>
-                                </div>
-                                <button class="p-1 text-text-muted-light transition-colors hover:text-primary dark:text-text-muted-dark dark:hover:text-primary">
-                                    <span class="material-symbols-outlined"> delete </span>
-                                    <span class="sr-only">Eliminar</span>
-                                </button>
-                            </div>
-
-                        </div>
-                    </div>
-                    <div class="space-y-6 lg:col-span-1">
-                        <div class="rounded-lg border border-subtle-light bg-surface-light p-6 dark:border-subtle-dark dark:bg-surface-dark">
-                            <h3 class="text-lg font-semibold">Resumen del pedido</h3>
-                            <div class="mt-4 space-y-3">
-                                <div class="flex justify-between">
-                                    <span class="text-text-muted-light dark:text-text-muted-dark">Subtotal</span>
-                                    <span class="font-medium text-text-light dark:text-text-dark">$59.97</span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span class="text-text-muted-light dark:text-text-muted-dark">Envío</span>
-                                    <span class="font-medium text-accent">Gratis</span>
-                                </div>
-                                <div class="border-t border-subtle-light pt-3 dark:border-subtle-dark">
-                                    <div class="flex justify-between text-lg font-bold">
-                                        <span class="text-text-light dark:text-text-dark">Total</span>
-                                        <span class="text-primary">$59.97</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <button class="mt-6 w-full rounded-lg bg-primary px-5 py-3 text-base font-bold text-white shadow-sm transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background-light dark:focus:ring-offset-background-dark">
-                                Proceder al pago
+                            <button class="p-1 text-text-muted-light transition-colors hover:text-primary dark:text-text-muted-dark dark:hover:text-primary">
+                                <span class="material-symbols-outlined"> delete </span>
+                                <span class="sr-only">Eliminar</span>
                             </button>
                         </div>
+
+                        <div class="flex items-center gap-4 p-4">
+                            <img alt="Portada del vinilo Abbey Road" class="h-20 w-20 flex-shrink-0 rounded-lg object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHxqY-uOJsF9rEMNjw5ASJcGwA_bi_Cgt9LoDBK5HIcMkMpEvcMZU5jJzrIJgm58D90IpX8wxA94A8h-XX1qWdbyJoRvDhN6nD87J3AXqqGfcQ0CQnr3TV5yQVNiUdPKd1ikn4ZVF9VHAAq9B6PY5c0HUPOBWwcz4w5coq_C-JaBkU5tKMzZPbMbnU-PNqxkJtKYvoCl1fd3qJ9DqVpGN86jN6JK2xhGoqEQDwkWY-GMpAMeZ2H6_2N_O_ITEmhwYpGGfHN29-1Zz5"/>
+                            <div class="flex-1">
+                                <h3 class="font-semibold text-text-light dark:text-text-dark">Abbey Road</h3>
+                                <p class="text-sm text-text-muted-light dark:text-text-muted-dark">The Beatles</p>
+                                <p class="mt-1 text-lg font-bold text-primary">$24.99</p>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <button class="flex h-8 w-8 items-center justify-center rounded-full border border-subtle-light text-text-muted-light transition-colors hover:bg-subtle-light hover:text-text-light dark:border-subtle-dark dark:text-text-muted-dark dark:hover:bg-subtle-dark dark:hover:text-text-dark">-</button>
+                                <input aria-label="Cantidad del producto Abbey Road" class="w-10 border-0 bg-transparent text-center font-medium focus:ring-0" type="number" value="1"/>
+                                <button class="flex h-8 w-8 items-center justify-center rounded-full border border-subtle-light text-text-muted-light transition-colors hover:bg-subtle-light hover:text-text-light dark:border-subtle-dark dark:text-text-muted-dark dark:hover:bg-subtle-dark dark:hover:text-text-dark">+</button>
+                            </div>
+                            <button class="p-1 text-text-muted-light transition-colors hover:text-primary dark:text-text-muted-dark dark:hover:text-primary">
+                                <span class="material-symbols-outlined"> delete </span>
+                                <span class="sr-only">Eliminar</span>
+                            </button>
+                        </div>
+
+                        <div class="flex items-center gap-4 p-4">
+                            <img alt="Portada del vinilo Thriller" class="h-20 w-20 flex-shrink-0 rounded-lg object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAq55MzuJ00RcfY32SLxGulsTzREnASlZqg66wy5UB1QgnHclKm7QpZwwEr6SC5xt5wMWVVW0YJ_yvm3lw_2jcFxGKkFcP5k3Dg_ibuEPnba8U1GbWLeLUs017DF7Sr8xvoNEE0Z4_n9NXeh0_-AyBd7zu7oIvTP8gH6zkJWfcy4OnX4KdBbmMaXUdieKKeoF1nzG8mfIKmQ1UFIoOgeM2ljYtEublMCx8CuTMVJwpYNMRwaLXsC9ywvRVO4SRsLzsSNlruNfDlgeP_"/>
+                            <div class="flex-1">
+                                <h3 class="font-semibold text-text-light dark:text-text-dark">Thriller</h3>
+                                <p class="text-sm text-text-muted-light dark:text-text-muted-dark">Michael Jackson</p>
+                                <p class="mt-1 text-lg font-bold text-primary">$14.99</p>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <button class="flex h-8 w-8 items-center justify-center rounded-full border border-subtle-light text-text-muted-light transition-colors hover:bg-subtle-light hover:text-text-light dark:border-subtle-dark dark:text-text-muted-dark dark:hover:bg-subtle-dark dark:hover:text-text-dark">-</button>
+                                <input aria-label="Cantidad del producto Thriller" class="w-10 border-0 bg-transparent text-center font-medium focus:ring-0" type="number" value="1"/>
+                                <button class="flex h-8 w-8 items-center justify-center rounded-full border border-subtle-light text-text-muted-light transition-colors hover:bg-subtle-light hover:text-text-light dark:border-subtle-dark dark:text-text-muted-dark dark:hover:bg-subtle-dark dark:hover:text-text-dark">+</button>
+                            </div>
+                            <button class="p-1 text-text-muted-light transition-colors hover:text-primary dark:text-text-muted-dark dark:hover:text-primary">
+                                <span class="material-symbols-outlined"> delete </span>
+                                <span class="sr-only">Eliminar</span>
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="space-y-6 lg:col-span-1">
+                    <div class="rounded-lg border border-subtle-light bg-surface-light p-6 dark:border-subtle-dark dark:bg-surface-dark">
+                        <h3 class="text-lg font-semibold">Resumen del pedido</h3>
+                        <div class="mt-4 space-y-3">
+                            <div class="flex justify-between">
+                                <span class="text-text-muted-light dark:text-text-muted-dark">Subtotal</span>
+                                <span class="font-medium text-text-light dark:text-text-dark">$59.97</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-text-muted-light dark:text-text-muted-dark">Envío</span>
+                                <span class="font-medium text-accent">Gratis</span>
+                            </div>
+                            <div class="border-t border-subtle-light pt-3 dark:border-subtle-dark">
+                                <div class="flex justify-between text-lg font-bold">
+                                    <span class="text-text-light dark:text-text-dark">Total</span>
+                                    <span class="text-primary">$59.97</span>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="mt-6 w-full rounded-lg bg-primary px-5 py-3 text-base font-bold text-white shadow-sm transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background-light dark:focus:ring-offset-background-dark">
+                            Proceder al pago
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
-</div>
-
+    </div>
+</main>
 {% endblock %}

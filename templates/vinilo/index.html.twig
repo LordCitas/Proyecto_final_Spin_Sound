@@ -1,41 +1,97 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Vinilo index{% endblock %}
+{% block title %}Viniland - Product Listing{% endblock %}
+
+{% block javascripts %}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&amp;display=swap" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#e45e1b",
+              "background-light": "#f8f6f6",
+              "background-dark": "#211611",
+            },
+            fontFamily: {
+              display: ["Space Grotesk"],
+            },
+            borderRadius: {
+              DEFAULT: "0.25rem",
+              lg: "0.5rem",
+              xl: "0.75rem",
+              full: "9999px",
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      .form-select { background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23e45e1b' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e"); background-position: right 0.5rem center; background-repeat: no-repeat; background-size: 1.5em 1.5em; padding-right: 2.5rem; -webkit-appearance: none; -moz-appearance: none; appearance: none; }
+    </style>
+    <script>document.documentElement.classList.add('dark');</script>
+    {{ importmap('app') }}
+{% endblock %}
 
 {% block body %}
-    <h1>Vinilo index</h1>
+  <main class="container mx-auto px-4 py-8">
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+      <aside class="lg:col-span-1">
+        {# Include the filters form (sub-template) #}
+        {% include 'vinilo/_filters.html.twig' %}
+      </aside>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Titulo</th>
-                <th>Fecha_lanzamiento</th>
-                <th>Precio</th>
-                <th>Stock</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for vinilo in vinilos %}
-            <tr>
-                <td>{{ vinilo.id }}</td>
-                <td>{{ vinilo.titulo }}</td>
-                <td>{{ vinilo.fechaLanzamiento ? vinilo.fechaLanzamiento|date('Y-m-d') : '' }}</td>
-                <td>{{ vinilo.precio }}</td>
-                <td>{{ vinilo.stock }}</td>
-                <td>
-                    <a href="{{ path('app_vinilo_show', {'id': vinilo.id}) }}">show</a>
-                    <a href="{{ path('app_vinilo_edit', {'id': vinilo.id}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="6">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+      <section class="lg:col-span-3">
+        <div class="flex items-center justify-between mb-6">
+          <h1 class="text-2xl font-bold">Todos los productos</h1>
+          <div>
+            <label class="text-sm mr-2">Ordenar por:</label>
+            <select class="form-select rounded px-3 py-2 text-sm">
+              <option>Relevancia</option>
+              <option>Precio: de menor a mayor</option>
+              <option>Precio: de mayor a menor</option>
+              <option>Novedades</option>
+            </select>
+          </div>
+        </div>
 
-    <a href="{{ path('app_vinilo_new') }}">Create new</a>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {% for vinilo in vinilos %}
+            <article class="rounded-lg bg-surface-light dark:bg-surface-dark overflow-hidden shadow">
+              <a href="{{ path('app_vinilo_show', {'id': vinilo.id}) }}" class="block">
+                <div class="aspect-square bg-center bg-cover" style="background-image: url('{{ vinilo.portada ?? 'https://via.placeholder.com/400' }}')"></div>
+                <div class="p-4">
+                  <h3 class="font-semibold">{{ vinilo.titulo }}</h3>
+                  <p class="text-sm text-on-surface-muted-light dark:text-on-surface-muted-dark">
+                    {% if vinilo.artistas is empty %}
+                      —
+                    {% else %}
+                      {% for artista in vinilo.artistas %}
+                        {{ artista.nombre }}{% if not loop.last %}, {% endif %}
+                      {% endfor %}
+                    {% endif %}
+                  </p>
+                  <div class="mt-2 font-bold">{{ vinilo.precio }} €</div>
+                </div>
+              </a>
+            </article>
+          {% else %}
+            <div>No hay productos.</div>
+          {% endfor %}
+        </div>
+
+        <nav class="mt-8 flex justify-center">
+          {# Simple pagination placeholder #}
+          <a class="px-3 py-1">&laquo; anterior</a>
+          <span class="px-3 py-1">1</span>
+          <a class="px-3 py-1">siguiente &raquo;</a>
+        </nav>
+      </section>
+    </div>
+  </main>
 {% endblock %}

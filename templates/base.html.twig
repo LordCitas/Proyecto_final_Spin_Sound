@@ -1,7 +1,8 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="dark">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{% block title %}Mi aplicación{% endblock %}</title>
     <style>
         /* Forzar fondo negro y texto blanco por defecto */
@@ -19,13 +20,79 @@
         }
     </style>
     {% block javascripts %}
+        {# Los templates pueden añadir scripts/estilos; por defecto se incluye app via importmap #}
         {{ importmap('app') }}
     {% endblock %}
 </head>
 <body style="background-color: #000 !important; color: #fff !important;">
+
+<header class="sticky top-0 py-2 z-50 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-sm border-b">
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex h-20 items-center justify-between">
+      <div class="flex items-center gap-8">
+        <a class="flex items-center gap-3" href="{{ path('app_home') }}">
+          {# Logo real en public/img (encontrado: public/img/logo-spin-sound-circular.png) #}
+          <img src="{{ asset('img/logo-spin-sound-circular.png') }}" alt="Viniland logo" class="h-10 w-auto object-contain" />
+        </a>
+        <nav class="hidden lg:flex items-center gap-6">
+          <a class="text-sm font-medium hover:text-primary transition-colors" href="{{ path('app_vinilo_index') }}">Vinilos</a>
+          <a class="text-sm font-medium hover:text-primary transition-colors" href="#">Sobre nosotros</a>
+          <a class="text-sm font-medium hover:text-primary transition-colors" href="#">Contacto</a>
+        </nav>
+      </div>
+      <div class="flex items-center justify-end gap-4">
+        <div class="relative hidden sm:block">
+          <label for="global_search" class="sr-only">Buscar</label>
+          <input id="global_search" class="h-10 w-full max-w-xs rounded-full border-0 bg-surface-light dark:bg-surface-dark pl-10 pr-4 text-sm text-on-surface-light dark:text-on-surface-dark placeholder:text-on-surface-muted-light dark:placeholder:text-on-surface-muted-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background-light dark:focus:ring-offset-background-dark" placeholder="Buscar..." />
+          <div class="absolute inset-y-0 left-0 flex items-center pl-3 text-on-surface-muted-light dark:text-on-surface-muted-dark">
+            <svg fill="currentColor" height="20" viewBox="0 0 256 256" width="20" xmlns="http://www.w3.org/2000/svg">
+              <path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"></path>
+            </svg>
+          </div>
+        </div>
+        <a href="{{ path('app_usuario_index') }}" class="flex h-10 w-10 items-center justify-center rounded-full bg-surface-light dark:bg-surface-dark hover:bg-primary/20 dark:hover:bg-primary/30 transition-colors">
+          <svg fill="currentColor" height="20px" viewBox="0 0 256 256" width="20px" xmlns="http://www.w3.org/2000/svg">
+            <path d="M230.92,212c-15.23-26.33-38.7-45.21-66.09-54.16a72,72,0,1,0-73.66,0C63.78,166.78,40.31,185.66,25.08,212a8,8,0,1,0,13.85,8c18.84-32.56,52.14-52,89.07-52s70.23,19.44,89.07,52a8,8,0,1,0,13.85-8ZM72,96a56,56,0,1,1,56,56A56.06,56.06,0,0,1,72,96Z"></path>
+          </svg>
+        </a>
+        <a href="{{ path('app_carrito_demo') }}" class="relative flex h-10 w-10 items-center justify-center rounded-full bg-surface-light dark:bg-surface-dark hover:bg-primary/20 dark:hover:bg-primary/30 transition-colors">
+          <svg fill="currentColor" height="20px" viewBox="0 0 256 256" width="20px" xmlns="http://www.w3.org/2000/svg">
+            <path d="M222.14,58.87A8,8,0,0,0,216,56H54.68L49.79,29.14A16,16,0,0,0,34.05,16H16a8,8,0,0,0,0,16h18L59.56,172.29a24,24,0,0,0,5.33,11.27,28,28,0,1,0,44.4,8.44h45.42A27.75,27.75,0,0,0,152,204a28,28,0,1,0,28-28H83.17a8,8,0,0,1-7.87-6.57L72.13,152h116a24,24,0,0,0,23.61-19.71l12.16-66.86A8,8,0,0,0,222.14,58.87ZM96,204a12,12,0,1,1-12-12A12,12,0,0,1,96,204Zm96,0a12,12,0,1,1-12-12A12,12,0,0,1,192,204Zm4-74.57A8,8,0,0,1,188.1,136H69.22L57.59,72H206.41Z"></path>
+          </svg>
+          <span class="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-secondary text-xs font-bold text-white">3</span>
+        </a>
+       </div>
+     </div>
+   </div>
+ </header>
+
 {% block body %}
-    <h1>¡Logrado! Symfony + React</h1>
-    <div {{ react_component('Hello', { 'fullName': 'Programador' }) }}></div>
+    {# Contenido de la página (cada plantilla rellenará este bloque) #}
+    <main class="min-h-screen">
+        <div class="container mx-auto px-4 py-8">
+            <h1 class="text-xl font-bold">Contenido</h1>
+            <p>Añade tu contenido en los templates que extiendan base.html.twig</p>
+        </div>
+    </main>
 {% endblock %}
+
+<footer class="bg-surface-light dark:bg-surface-dark">
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="flex flex-col items-center gap-8">
+      <div class="flex items-center gap-6 text-on-surface-muted-light dark:text-on-surface-muted-dark">
+        <a class="text-sm hover:text-primary transition-colors" href="#">Política de privacidad</a>
+        <a class="text-sm hover:text-primary transition-colors" href="#">Términos y condiciones</a>
+        <a class="text-sm hover:text-primary transition-colors" href="#">Contacto</a>
+      </div>
+      <div class="flex justify-center space-x-6 text-on-surface-muted-light dark:text-on-surface-muted-dark">
+        <a class="hover:text-primary transition-colors" href="#">Twitter</a>
+        <a class="hover:text-primary transition-colors" href="#">Facebook</a>
+        <a class="hover:text-primary transition-colors" href="#">Instagram</a>
+      </div>
+      <p class="text-center text-sm text-on-surface-muted-light dark:text-on-surface-muted-dark">© 2024 Viniland. Todos los derechos reservados.</p>
+    </div>
+  </div>
+</footer>
+
 </body>
 </html>

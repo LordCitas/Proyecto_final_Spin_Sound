@@ -1,13 +1,25 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Edit Usuario{% endblock %}
+{% block title %}Editar perfil - Viniland{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+{% endblock %}
 
 {% block body %}
-    <h1>Edit Usuario</h1>
+  <main class="container mx-auto px-4 py-8">
+    <div class="max-w-3xl mx-auto bg-surface-light dark:bg-surface-dark rounded-lg shadow p-6">
+      <h1 class="text-2xl font-bold mb-4">Editar perfil</h1>
 
-    {{ include('usuario/_form.html.twig', {'button_label': 'Update'}) }}
+      {# El controlador inyecta la variable `form` para editar el usuario #}
+      {{ include('usuario/_form.html.twig', { form: form, button_label: 'Guardar cambios' }) }}
 
-    <a href="{{ path('app_usuario_index') }}">back to list</a>
+      <div class="mt-4 flex gap-2">
+        <a class="text-sm rounded border px-4 py-2" href="{{ path('app_usuario_show', {'id': usuario.id}) }}">Volver al perfil</a>
+        <a class="text-sm rounded border px-4 py-2" href="{{ path('app_usuario_index') }}">Volver a la lista</a>
+      </div>
 
-    {{ include('usuario/_delete_form.html.twig') }}
+      {{ include('usuario/_delete_form.html.twig') }}
+    </div>
+  </main>
 {% endblock %}

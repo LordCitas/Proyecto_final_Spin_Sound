@@ -1,0 +1,42 @@
+{# templates/vinilo/_filters.html.twig - formulario de filtros simple (GET) #}
+<form method="get" action="{{ path('app_vinilo_index') }}" class="space-y-4 rounded-lg border border-subtle-light bg-surface-light p-4 dark:border-subtle-dark dark:bg-surface-dark">
+  <h3 class="font-semibold text-lg">Filtrar</h3>
+
+  <div>
+    <label for="f_categoria" class="block text-sm mb-1">Categoría</label>
+    <select id="f_categoria" name="categoria" class="form-select w-full rounded px-3 py-2 text-sm">
+      <option value="">Todas</option>
+      <option value="vinilos">Vinilos</option>
+      <option value="merchandising">Merchandising</option>
+    </select>
+  </div>
+
+  <div>
+    <label for="f_genero" class="block text-sm mb-1">Género</label>
+    <select id="f_genero" name="genero" class="form-select w-full rounded px-3 py-2 text-sm">
+      <option value="">Todos</option>
+      <option value="rock">Rock</option>
+      <option value="pop">Pop</option>
+      <option value="jazz">Jazz</option>
+      <option value="clasica">Clásica</option>
+    </select>
+  </div>
+
+  <div>
+    <label for="f_artista" class="block text-sm mb-1">Artista</label>
+    <select id="f_artista" name="artista" class="form-select w-full rounded px-3 py-2 text-sm">
+      <option value="">Todos</option>
+      <option value="artist1">Artista 1</option>
+      <option value="artist2">Artista 2</option>
+    </select>
+  </div>
+
+  <div>
+    <label for="f_precio" class="block text-sm mb-1">Precio máximo (€)</label>
+    <input id="f_precio" type="number" name="precio_max" min="0" step="0.01" class="w-full rounded border px-3 py-2 text-sm" placeholder="Ej. 30" />
+  </div>
+
+  <div class="pt-2">
+    <button type="submit" class="w-full rounded bg-primary px-4 py-2 text-white font-semibold">Aplicar filtros</button>
+  </div>
+</form>
