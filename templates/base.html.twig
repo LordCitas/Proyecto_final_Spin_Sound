@@ -39,9 +39,18 @@
           <a class="text-sm font-medium hover:text-primary transition-colors" href="#">Sobre nosotros</a>
           <a class="text-sm font-medium hover:text-primary transition-colors" href="#">Contacto</a>
         </nav>
+
+        {# Botón hamburguesa para pantallas pequeñas #}
+        <button id="mobile-menu-button" aria-controls="mobile-menu" aria-expanded="false" class="lg:hidden inline-flex items-center justify-center rounded-md p-2 text-on-surface-muted-light dark:text-on-surface-muted-dark hover:bg-surface-light/20 dark:hover:bg-surface-dark/20 focus:outline-none focus:ring-2 focus:ring-primary" type="button">
+          <span class="sr-only">Abrir menú</span>
+          <!-- Icono hamburguesa -->
+          <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
       </div>
       <div class="flex items-center justify-end gap-4">
-        <div class="relative hidden sm:block">
+        <div class="relative flex-1">
           <label for="global_search" class="sr-only">Buscar</label>
           <input id="global_search" class="h-10 w-full max-w-xs rounded-full border-0 bg-surface-light dark:bg-surface-dark pl-10 pr-4 text-sm text-on-surface-light dark:text-on-surface-dark placeholder:text-on-surface-muted-light dark:placeholder:text-on-surface-muted-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background-light dark:focus:ring-offset-background-dark" placeholder="Buscar..." />
           <div class="absolute inset-y-0 left-0 flex items-center pl-3 text-on-surface-muted-light dark:text-on-surface-muted-dark">
@@ -64,7 +73,34 @@
        </div>
      </div>
    </div>
+
+   {# Menú móvil colapsable (visible solo en pantallas pequeñas) #}
+   <nav id="mobile-menu" class="hidden lg:hidden border-t bg-surface-light dark:bg-surface-dark">
+     <div class="container mx-auto px-4 py-3 flex flex-col gap-2">
+       <a class="text-sm font-medium hover:text-primary transition-colors" href="{{ path('app_vinilo_index') }}">Vinilos</a>
+       <a class="text-sm font-medium hover:text-primary transition-colors" href="#">Sobre nosotros</a>
+       <a class="text-sm font-medium hover:text-primary transition-colors" href="#">Contacto</a>
+     </div>
+   </nav>
  </header>
+
+ <script>
+   (function() {
+     var btn = document.getElementById('mobile-menu-button');
+     var menu = document.getElementById('mobile-menu');
+     if (!btn || !menu) return;
+     btn.addEventListener('click', function() {
+       var isHidden = menu.classList.contains('hidden');
+       if (isHidden) {
+         menu.classList.remove('hidden');
+         btn.setAttribute('aria-expanded', 'true');
+       } else {
+         menu.classList.add('hidden');
+         btn.setAttribute('aria-expanded', 'false');
+       }
+     });
+   })();
+ </script>
 
 {% block body %}
     {# Contenido de la página (cada plantilla rellenará este bloque) #}
