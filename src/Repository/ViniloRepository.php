@@ -26,29 +26,49 @@ class ViniloRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    /**
+     * Filtra vinilos por búsqueda de texto, género, artista y precio máximo.
+     * Todos los parámetros son opcionales.
+     */
+    public function findByFilters(
+        string $query    = '',
+        string $genero   = '',
+        string $artista  = '',
+        ?float $precioMax = null,
+        string $orden    = ''
+    ): array {
+        $qb = $this->createQueryBuilder('v')
+            ->leftJoin('v.artistas', 'a')
+            ->leftJoin('v.generos', 'g')
+            ->addSelect('a', 'g');
 
-    //    /**
-    //     * @return Vinilo[] Returns an array of Vinilo objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('v')
-    //            ->andWhere('v.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('v.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+        if ($query !== '') {
+            $qb->andWhere('v.titulo LIKE :q OR a.nombre LIKE :q')
+               ->setParameter('q', '%' . $query . '%');
+        }
 
-    //    public function findOneBySomeField($value): ?Vinilo
-    //    {
-    //        return $this->createQueryBuilder('v')
-    //            ->andWhere('v.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+        if ($genero !== '') {
+            $qb->andWhere('LOWER(g.nombre) = LOWER(:genero)')
+               ->setParameter('genero', $genero);
+        }
+
+        if ($artista !== '') {
+            $qb->andWhere('a.id = :artista_id')
+               ->setParameter('artista_id', (int) $artista);
+        }
+
+        if ($precioMax !== null) {
+            $qb->andWhere('v.precio <= :precio_max')
+               ->setParameter('precio_max', $precioMax);
+        }
+
+        match ($orden) {
+            'precio_asc'  => $qb->orderBy('v.precio', 'ASC'),
+            'precio_desc' => $qb->orderBy('v.precio', 'DESC'),
+            'novedad'     => $qb->orderBy('v.fecha_lanzamiento', 'DESC'),
+            default       => $qb->orderBy('v.titulo', 'ASC'),
+        };
+
+        return $qb->getQuery()->getResult();
+    }
 }

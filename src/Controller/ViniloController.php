@@ -4,6 +4,8 @@ namespace App\Controller;
 
 use App\Entity\Vinilo;
 use App\Form\ViniloType;
+use App\Repository\ArtistaRepository;
+use App\Repository\GeneroRepository;
 use App\Repository\ViniloRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -15,16 +17,35 @@ use Symfony\Component\Routing\Attribute\Route;
 final class ViniloController extends AbstractController
 {
     #[Route(name: 'app_vinilo_index', methods: ['GET'])]
-    public function index(ViniloRepository $viniloRepository, Request $request): Response
-    {
-        $query   = $request->query->get('q', '');
-        $vinilos = $query
-            ? $viniloRepository->findBySearch($query)
-            : $viniloRepository->findAll();
+    public function index(
+        ViniloRepository  $viniloRepository,
+        GeneroRepository  $generoRepository,
+        ArtistaRepository $artistaRepository,
+        Request           $request
+    ): Response {
+        $query     = $request->query->get('q', '');
+        $genero    = $request->query->get('genero', '');
+        $artista   = $request->query->get('artista', '');
+        $precioMax = $request->query->get('precio_max', '');
+        $orden     = $request->query->get('orden', '');
+
+        $vinilos = $viniloRepository->findByFilters(
+            $query,
+            $genero,
+            $artista,
+            $precioMax !== '' ? (float) $precioMax : null,
+            $orden
+        );
 
         return $this->render('vinilo/index.html.twig', [
-            'vinilos' => $vinilos,
-            'query'   => $query,
+            'vinilos'   => $vinilos,
+            'query'     => $query,
+            'genero'    => $genero,
+            'artista'   => $artista,
+            'precio_max' => $precioMax,
+            'orden'     => $orden,
+            'generos'   => $generoRepository->findBy([], ['nombre' => 'ASC']),
+            'artistas'  => $artistaRepository->findBy([], ['nombre' => 'ASC']),
         ]);
     }
 
