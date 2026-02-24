@@ -9,8 +9,8 @@
             <div>
                 <nav aria-label="Breadcrumb">
                     <ol class="flex items-center gap-1.5 text-sm">
-                        <li><a href="{{ path('app_home') }}" class="text-on-surface-muted-dark hover:text-primary">Inicio</a></li>
-                        <li><span class="text-on-surface-muted-dark">/</span></li>
+                        <li><a href="{{ path('app_home') }}" style="color: #e00000;" class="text-on-surface-muted-dark hover:text-primary">Inicio</a></li>
+                        <li><span style="color: #e00000;" class="text-on-surface-muted-dark">/</span></li>
                         <li><span class="font-medium text-white">Carrito</span></li>
                     </ol>
                 </nav>
@@ -110,16 +110,16 @@
                         <h3 class="text-lg font-semibold text-white">Resumen del pedido</h3>
                         <div class="mt-4 space-y-3 text-sm">
                             <div class="flex justify-between">
-                                <span class="text-on-surface-muted-dark">Subtotal</span>
+                                <span style="color: #e00000;" class="text-on-surface-muted-dark">Subtotal</span>
                                 <span class="font-medium text-white">{{ subtotal|number_format(2, ',', '.') }} €</span>
                             </div>
                             <div class="flex justify-between">
-                                <span class="text-on-surface-muted-dark">Envío</span>
+                                <span style="color: #e00000;" class="text-on-surface-muted-dark">Envío</span>
                                 <span class="font-medium text-primary">{{ shipping > 0 ? shipping|number_format(2, ',', '.') ~ ' €' : 'Gratis' }}</span>
                             </div>
                             <div class="border-t border-background-dark pt-3">
                                 <div class="flex justify-between text-lg font-bold">
-                                    <span class="text-white">Total</span>
+                                    <span style="color: #e00000;" class="text-white">Total</span>
                                     <span class="text-primary">{{ (subtotal + shipping)|number_format(2, ',', '.') }} €</span>
                                 </div>
                             </div>
