@@ -316,12 +316,21 @@ class ViniloFixtures extends Fixture
             // Obtener imagen desde Discogs
             if ($data['discogsId']) {
                 $releaseData = $this->discogsService->fetchRelease($data['discogsId']);
-                $imageUrl = $this->discogsService->getImageUrl($releaseData);
+                if (!$releaseData) {
+                    echo "⚠️  Discogs no devolvió datos para releaseId {$data['discogsId']} ({$data['titulo']}).\n";
+                } else {
+                    $imageUrl = $this->discogsService->getImageUrl($releaseData);
 
-                if ($imageUrl) {
-                    $vinilo->setImagen($imageUrl);
-                    echo "🖼️  Imagen obtenida para: {$data['titulo']}\n";
+                    if ($imageUrl) {
+                        $vinilo->setImagen($imageUrl);
+                        echo "🖼️  Imagen obtenida para: {$data['titulo']} ({$imageUrl})\n";
+                    } else {
+                        echo "⚠️  No se encontró imagen en los datos de Discogs para releaseId {$data['discogsId']} ({$data['titulo']}).\n";
+                    }
                 }
+
+                // Pausa corta para evitar alcanzar límites de la API
+                usleep(150000); // 150ms
             }
 
             $artista->addVinilo($vinilo);
