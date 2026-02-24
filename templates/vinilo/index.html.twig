@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Spin&Sound - Vinilos{% endblock %}
+{% block title %}Spin&Sound | Vinilos{% endblock %}
 
 {% block body %}
 <main class="container mx-auto px-4 py-8">
@@ -83,9 +83,13 @@
                                 </div>
                             </a>
                             <div class="px-4 pb-4">
-                                <button class="w-full rounded-lg py-2 text-sm font-bold text-white transition-transform hover:scale-105" style="background-color: #e00000;">
-                                    Añadir al carrito
-                                </button>
+                                <form method="post" action="{{ path('app_carrito_add') }}">
+                                    <input type="hidden" name="vinilo_id" value="{{ vinilo.id }}">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('add-to-cart') }}">
+                                    <button class="w-full rounded-lg py-2 text-sm font-bold text-white transition-transform hover:scale-105" style="background-color: #e00000;">
+                                        Añadir al carrito
+                                    </button>
+                                </form>
                             </div>
                         </article>
                     {% endfor %}
