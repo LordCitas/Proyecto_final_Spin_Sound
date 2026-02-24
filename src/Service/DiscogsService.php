@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use Psr\Log\LoggerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class DiscogsService
@@ -11,6 +12,7 @@ class DiscogsService
     public function __construct(
         private readonly HttpClientInterface $client,
         private readonly string $token,
+        private readonly ?LoggerInterface $logger = null,
     ) {}
 
     /**
@@ -38,6 +40,7 @@ class DiscogsService
             $data = $response->toArray();
 
             if (empty($data['results'])) {
+                $this->logger?->debug('Discogs search returned no results', ['artist' => $artista, 'title' => $titulo]);
                 return null;
             }
 
@@ -45,6 +48,7 @@ class DiscogsService
             return $this->fetchRelease($releaseId);
 
         } catch (\Throwable $e) {
+            $this->logger?->error('Error fetching release data from Discogs', ['exception' => $e->getMessage(), 'artist' => $artista, 'title' => $titulo, 'discogsId' => $discogsId]);
             return null;
         }
     }
@@ -61,6 +65,7 @@ class DiscogsService
 
             return $response->toArray();
         } catch (\Throwable $e) {
+            $this->logger?->error('Error fetching release from Discogs', ['exception' => $e->getMessage(), 'discogsId' => $id]);
             return null;
         }
     }
@@ -72,6 +77,7 @@ class DiscogsService
     public function getImageUrl(?array $releaseData): ?string
     {
         if (!$releaseData || empty($releaseData['images'])) {
+            $this->logger?->debug('No images found in release data', ['releaseData_keys' => $releaseData ? array_keys($releaseData) : null]);
             return null;
         }
 
@@ -83,7 +89,13 @@ class DiscogsService
         }
 
         // Si no hay primaria, devolver la primera imagen
-        return $releaseData['images'][0]['uri'] ?? null;
+        $uri = $releaseData['images'][0]['uri'] ?? null;
+        if ($uri) {
+            return $uri;
+        }
+
+        $this->logger?->debug('Images array exists but no uri found', ['images' => $releaseData['images']]);
+        return null;
     }
 
     /**
@@ -104,6 +116,7 @@ class DiscogsService
 
             return $response->toArray();
         } catch (\Throwable $e) {
+            $this->logger?->error('Discogs search error', ['exception' => $e->getMessage(), 'query' => $query]);
             return ['results' => [], 'pagination' => []];
         }
     }
@@ -116,6 +129,8 @@ class DiscogsService
 
         if ($this->token) {
             $headers['Authorization'] = 'Discogs token=' . $this->token;
+        } else {
+            $this->logger?->warning('Discogs token is empty. API requests may be rate-limited or blocked. Set DISCOGS_TOKEN in .env.');
         }
 
         return $headers;
@@ -137,4 +152,3 @@ class DiscogsService
         }
     }
 }
-
