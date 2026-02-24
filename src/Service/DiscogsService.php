@@ -66,6 +66,27 @@ class DiscogsService
     }
 
     /**
+     * Extrae la URL de la imagen principal de un release.
+     * Prioriza 'primary' image, o la primera disponible.
+     */
+    public function getImageUrl(?array $releaseData): ?string
+    {
+        if (!$releaseData || empty($releaseData['images'])) {
+            return null;
+        }
+
+        // Buscar imagen primaria
+        foreach ($releaseData['images'] as $image) {
+            if (($image['type'] ?? '') === 'primary' && !empty($image['uri'])) {
+                return $image['uri'];
+            }
+        }
+
+        // Si no hay primaria, devolver la primera imagen
+        return $releaseData['images'][0]['uri'] ?? null;
+    }
+
+    /**
      * Busca lanzamientos por texto libre (para el buscador general).
      */
     public function search(string $query, int $perPage = 20, int $page = 1): array

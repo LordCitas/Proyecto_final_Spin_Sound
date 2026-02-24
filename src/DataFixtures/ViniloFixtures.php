@@ -5,11 +5,16 @@ namespace App\DataFixtures;
 use App\Entity\Artista;
 use App\Entity\Genero;
 use App\Entity\Vinilo;
+use App\Service\DiscogsService;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
 class ViniloFixtures extends Fixture
 {
+    public function __construct(
+        private readonly DiscogsService $discogsService
+    ) {}
+
     private const VINILOS = [
         // ── ROCK (5) ──────────────────────────────────────────────
         [
@@ -307,6 +312,17 @@ class ViniloFixtures extends Fixture
             $vinilo->setPrecio($data['precio']);
             $vinilo->setStock($data['stock']);
             $vinilo->setDiscogsId($data['discogsId']);
+
+            // Obtener imagen desde Discogs
+            if ($data['discogsId']) {
+                $releaseData = $this->discogsService->fetchRelease($data['discogsId']);
+                $imageUrl = $this->discogsService->getImageUrl($releaseData);
+
+                if ($imageUrl) {
+                    $vinilo->setImagen($imageUrl);
+                    echo "🖼️  Imagen obtenida para: {$data['titulo']}\n";
+                }
+            }
 
             $artista->addVinilo($vinilo);
             $genero->addGeneroVinilo($vinilo);

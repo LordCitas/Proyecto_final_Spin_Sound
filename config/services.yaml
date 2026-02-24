@@ -24,3 +24,8 @@ services:
     App\Service\DiscogsService:
         arguments:
             $token: '%env(DISCOGS_TOKEN)%'
+
+    App\DataFixtures\ViniloFixtures:
+        arguments:
+            $discogsService: '@App\Service\DiscogsService'
+
