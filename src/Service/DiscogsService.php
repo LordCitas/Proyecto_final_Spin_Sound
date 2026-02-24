@@ -135,4 +135,20 @@ class DiscogsService
 
         return $headers;
     }
+
+    /**
+     * Obtiene los detalles completos de un master por su ID de Discogs.
+     */
+    public function fetchMaster(int $id): ?array
+    {
+        try {
+            $response = $this->client->request('GET', self::BASE_URL . '/masters/' . $id, [
+                'headers' => $this->headers(),
+            ]);
+
+            return $response->toArray();
+        } catch (\Throwable $e) {
+            return null;
+        }
+    }
 }

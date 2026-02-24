@@ -67,7 +67,7 @@
                     <form method="post" action="{{ path('app_carrito_add') }}" class="flex-1">
                         <input type="hidden" name="vinilo_id" value="{{ vinilo.id }}">
                         <input type="hidden" name="_token" value="{{ csrf_token('add-to-cart') }}">
-                        <button type="submit" class="flex h-12 w-full items-center justify-center rounded-lg px-6 font-bold text-white shadow-md transition-transform hover:scale-105" style="background-color: #cf6329;">
+                        <button type="submit" class="flex h-12 w-full items-center justify-center rounded-lg px-6 font-bold text-white shadow-md transition-transform hover:scale-105" style="background-color: #e00000;">
                             Añadir al carrito
                         </button>
                     </form>
