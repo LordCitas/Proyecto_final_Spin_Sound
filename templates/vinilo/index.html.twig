@@ -33,13 +33,13 @@
                     {% if query %}
                         <span class="inline-flex items-center gap-1 rounded-full bg-primary/20 px-3 py-1 text-xs text-primary">
                             🔍 "{{ query }}"
-                            <a href="{{ path('app_vinilo_index', {genero: genero, artista: artista, precio_max: precioMax, orden: orden}) }}" class="hover:text-white">✕</a>
+                            <a href="{{ path('app_vinilo_index', {genero: genero, artista: artista, precio_max: precio_max, orden: orden}) }}" class="hover:text-white">✕</a>
                         </span>
                     {% endif %}
                     {% if genero %}
                         <span class="inline-flex items-center gap-1 rounded-full bg-primary/20 px-3 py-1 text-xs text-primary">
                             🎵 {{ genero }}
-                            <a href="{{ path('app_vinilo_index', {q: query, artista: artista, precio_max: precioMax, orden: orden}) }}" class="hover:text-white">✕</a>
+                            <a href="{{ path('app_vinilo_index', {q: query, artista: artista, precio_max: precio_max, orden: orden}) }}" class="hover:text-white">✕</a>
                         </span>
                     {% endif %}
                     {% if artista %}
@@ -47,14 +47,14 @@
                             {% if (a.id ~ '') == artista %}
                                 <span class="inline-flex items-center gap-1 rounded-full bg-primary/20 px-3 py-1 text-xs text-primary">
                                     👤 {{ a.nombre }}
-                                    <a href="{{ path('app_vinilo_index', {q: query, genero: genero, precio_max: precioMax, orden: orden}) }}" class="hover:text-white">✕</a>
+                                    <a href="{{ path('app_vinilo_index', {q: query, genero: genero, precio_max: precio_max, orden: orden}) }}" class="hover:text-white">✕</a>
                                 </span>
                             {% endif %}
                         {% endfor %}
                     {% endif %}
-                    {% if precioMax %}
+                    {% if precio_max %}
                         <span class="inline-flex items-center gap-1 rounded-full bg-primary/20 px-3 py-1 text-xs text-primary">
-                            💶 Máx. {{ precioMax }} €
+                            💶 Máx. {{ precio_max }} €
                             <a href="{{ path('app_vinilo_index', {q: query, genero: genero, artista: artista, orden: orden}) }}" class="hover:text-white">✕</a>
                         </span>
                     {% endif %}
@@ -83,7 +83,7 @@
                                 </div>
                             </a>
                             <div class="px-4 pb-4">
-                                <button class="w-full rounded-lg py-2 text-sm font-bold text-white transition-transform hover:scale-105" style="background-color: #cf6329;">
+                                <button class="w-full rounded-lg py-2 text-sm font-bold text-white transition-transform hover:scale-105" style="background-color: #e00000;">
                                     Añadir al carrito
                                 </button>
                             </div>
