@@ -66,52 +66,15 @@
         .text-on-surface-light, .text-text-light {
             color: #fff !important;
         }
-<<<<<<< master
-        /* Estilos específicos para el input de búsqueda */
-        /* Transición y 'ring' en hover/focus con color #590c2c */
-        #global_search {
-            transition: box-shadow 0.18s ease, background-color 0.18s ease, color 0.18s ease;
-            -webkit-transition: box-shadow 0.18s ease, background-color 0.18s ease, color 0.18s ease;
-        }
-        /* Hover: cambiar fondo a rojo #590c2c y mantener texto legible */
-        #global_search:hover {
-            background-color: #590c2c !important;
-            color: #fff !important;
-            box-shadow: 0 0 0 4px rgba(89, 12, 44, 0.14) !important;
-        }
-        /* Focus: fondo rojo ligeramente más oscuro e indicador más intenso */
-        #global_search:focus {
-            background-color: #4f0a26 !important; /* versión ligeramente más oscura */
-            color: #fff !important;
-            box-shadow: 0 0 0 6px rgba(89, 12, 44, 0.28) !important;
-            outline: none !important;
-            border-radius: 9999px; /* mantener forma redondeada */
-        }
-        /* Estilos específicos para los enlaces del header y footer: hover/focus en rojo #590c2c */
-        header a:hover,
-        header a:focus,
-        header nav a:hover,
-        header nav a:focus,
-        #mobile-menu a:hover,
-        #mobile-menu a:focus,
-        footer a:hover,
-        footer a:focus {
-            color: #e00000 !important;
-            transition: color 0.18s ease;
-=======
         .material-symbols-outlined {
             font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
         }
-        .form-select {
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23cf6329' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
-            background-position: right 0.5rem center;
-            background-repeat: no-repeat;
-            background-size: 1.5em 1.5em;
-            padding-right: 2.5rem;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
->>>>>>> master
+        header a:hover, header a:focus,
+        header nav a:hover, header nav a:focus,
+        #mobile-menu a:hover, #mobile-menu a:focus,
+        footer a:hover, footer a:focus {
+            color: #cf6329 !important;
+            transition: color 0.18s ease;
         }
     </style>
 
@@ -160,11 +123,11 @@
             <path d="M230.92,212c-15.23-26.33-38.7-45.21-66.09-54.16a72,72,0,1,0-73.66,0C63.78,166.78,40.31,185.66,25.08,212a8,8,0,1,0,13.85,8c18.84-32.56,52.14-52,89.07-52s70.23,19.44,89.07,52a8,8,0,1,0,13.85-8ZM72,96a56,56,0,1,1,56,56A56.06,56.06,0,0,1,72,96Z"></path>
           </svg>
         </a>
-        <a href="{{ path('app_carrito_demo') }}" class="relative flex h-10 w-10 items-center justify-center rounded-full bg-surface-light dark:bg-surface-dark hover:bg-primary/20 dark:hover:bg-primary/30 transition-colors">
+        <a href="{{ path('app_carrito_show_user') }}" class="relative flex h-10 w-10 items-center justify-center rounded-full bg-surface-light dark:bg-surface-dark hover:bg-primary/20 dark:hover:bg-primary/30 transition-colors">
           <svg fill="currentColor" height="20px" viewBox="0 0 256 256" width="20px" xmlns="http://www.w3.org/2000/svg">
             <path d="M222.14,58.87A8,8,0,0,0,216,56H54.68L49.79,29.14A16,16,0,0,0,34.05,16H16a8,8,0,0,0,0,16h18L59.56,172.29a24,24,0,0,0,5.33,11.27,28,28,0,1,0,44.4,8.44h45.42A27.75,27.75,0,0,0,152,204a28,28,0,1,0,28-28H83.17a8,8,0,0,1-7.87-6.57L72.13,152h116a24,24,0,0,0,23.61-19.71l12.16-66.86A8,8,0,0,0,222.14,58.87ZM96,204a12,12,0,1,1-12-12A12,12,0,0,1,96,204Zm96,0a12,12,0,1,1-12-12A12,12,0,0,1,192,204Zm4-74.57A8,8,0,0,1,188.1,136H69.22L57.59,72H206.41Z"></path>
           </svg>
-          <span class="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full text-xs font-bold text-white" style="background-color: #e00000;" aria-hidden="true">0</span>
+          <span class="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full text-xs font-bold text-white" style="background-color: #e00000;">{{ carrito_count }}</span>
         </a>
        </div>
      </div>

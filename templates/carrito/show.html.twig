@@ -2,10 +2,6 @@
 
 {% block title %}Spin&Sound | Carrito de Compras{% endblock %}
 
-{% block javascripts %}
-    {{ parent() }}
-{% endblock %}
-
 {% block body %}
 <main class="flex-grow">
     <div class="mx-auto max-w-4xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
@@ -13,88 +9,130 @@
             <div>
                 <nav aria-label="Breadcrumb">
                     <ol class="flex items-center gap-1.5 text-sm">
-                        <li>
-                            <a style="color: #e00000;" class="text-text-muted-light transition-colors hover:text-primary dark:text-text-muted-dark dark:hover:text-primary" href="#">Inicio</a>
-                        </li>
-                        <li><span style="color: #e00000;" class="text-text-muted-light dark:text-text-muted-dark">/</span></li>
-                        <li>
-                            <span class="font-medium text-text-light dark:text-text-dark">Carrito</span>
-                        </li>
+                        <li><a href="{{ path('app_home') }}" class="text-on-surface-muted-dark hover:text-primary">Inicio</a></li>
+                        <li><span class="text-on-surface-muted-dark">/</span></li>
+                        <li><span class="font-medium text-white">Carrito</span></li>
                     </ol>
                 </nav>
-                <h2 class="mt-4 text-3xl font-bold tracking-tight text-text-light dark:text-text-dark sm:text-4xl">Tu Carrito</h2>
+                <h2 class="mt-4 text-3xl font-bold tracking-tight text-white sm:text-4xl">Tu Carrito</h2>
             </div>
 
+            {% set detalles = carrito.detalleCarritos %}
+            {% set subtotal = 0 %}
+            {% for d in detalles %}
+                {% set subtotal = subtotal + (d.precio * d.cantidad) %}
+            {% endfor %}
+            {% set shipping = subtotal > 0 ? 5.00 : 0.00 %}
+
             <div class="grid grid-cols-1 gap-12 lg:grid-cols-3 lg:items-start">
+
+                {# Lista de items #}
                 <div class="space-y-6 lg:col-span-2">
-                    <div class="divide-y divide-subtle-light rounded-lg border border-subtle-light bg-surface-light dark:divide-subtle-dark dark:border-subtle-dark dark:bg-surface-dark">
+                    <div class="divide-y divide-surface-dark rounded-lg border border-surface-dark bg-surface-dark">
+                        {% if detalles|length > 0 %}
+                            {% for detalle in detalles %}
+                                {% set vinilo = detalle.vinilo %}
+                                <article class="flex items-center gap-4 p-4">
 
-                        {# Contenedor donde se renderizan los items del carrito (ahora con lógica Twig). #}
-                        <div id="cart-items" class="p-0">
-                            {% set subtotal = 0 %}
+                                    {# Imagen #}
+                                    <a href="{{ vinilo ? path('app_vinilo_show', {id: vinilo.id}) : '#' }}"
+                                       class="h-20 w-20 flex-shrink-0 rounded-lg overflow-hidden bg-background-dark flex items-center justify-center">
+                                        {% if vinilo and vinilo.imagen %}
+                                            <img src="{{ vinilo.imagen }}" alt="{{ vinilo.titulo }}" class="h-full w-full object-cover">
+                                        {% else %}
+                                            <svg fill="currentColor" class="h-10 w-10 text-on-surface-muted-dark" viewBox="0 0 256 256">
+                                                <path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm40-96a40,40,0,1,1-40-40A40,40,0,0,1,168,120Zm-16,0a24,24,0,1,0-24,24A24,24,0,0,0,152,120Z"/>
+                                            </svg>
+                                        {% endif %}
+                                    </a>
 
-                            {% if carrito and carrito.getDetalleCarritos|length > 0 %}
-                                {% for detalle in carrito.getDetalleCarritos %}
-                                    {% set vinilo = detalle.getVinilo() %}
-                                    {% set lineTotal = (detalle.getPrecio() ?: 0) * (detalle.getCantidad() ?: 0) %}
-                                    {% set subtotal = subtotal + lineTotal %}
-
-                                    <article class="flex items-center gap-4 py-4 px-4 border-b last:border-b-0">
-                                        <a href="{{ vinilo ? path('app_vinilo_show', {'id': vinilo.getId()}) : '#' }}" class="w-20 h-20 flex-shrink-0 rounded-md overflow-hidden bg-surface-dark">
-                                            {% if vinilo and vinilo.getImagen is defined and vinilo.getImagen() %}
-                                                <img src="{{ asset(vinilo.getImagen()) }}" alt="{{ vinilo.getTitulo() }}" class="w-full h-full object-cover">
-                                            {% else %}
-                                                <div class="w-full h-full flex items-center justify-center text-sm text-on-surface-muted-dark">Sin imagen</div>
-                                            {% endif %}
+                                    {# Info #}
+                                    <div class="flex-1 min-w-0">
+                                        <a href="{{ vinilo ? path('app_vinilo_show', {id: vinilo.id}) : '#' }}"
+                                           class="font-semibold text-white hover:text-primary truncate block">
+                                            {{ vinilo ? vinilo.titulo : '—' }}
                                         </a>
+                                        {% if vinilo and vinilo.artistas.first %}
+                                            <p class="text-sm text-on-surface-muted-dark">{{ vinilo.artistas.first.nombre }}</p>
+                                        {% endif %}
+                                        <p class="text-sm text-primary font-bold mt-1">{{ detalle.precio|number_format(2, ',', '.') }} €</p>
+                                    </div>
 
-                                        <div class="flex-1">
-                                            <a href="{{ vinilo ? path('app_vinilo_show', {'id': vinilo.getId()}) : '#' }}" class="font-semibold text-text-light dark:text-text-dark hover:text-primary">{{ vinilo ? vinilo.getTitulo() : '—' }}</a>
-                                            {% if vinilo and vinilo.getArtistas() is iterable and vinilo.getArtistas()|length > 0 %}
-                                                <p class="text-sm text-on-surface-muted-dark">{{ vinilo.getArtistas().first().getNombre() }}</p>
-                                            {% endif %}
-                                        </div>
+                                    {# Cantidad #}
+                                    <div class="flex items-center gap-2">
+                                        <form method="post" action="{{ path('app_carrito_update_cantidad') }}">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('update-cart') }}">
+                                            <input type="hidden" name="detalle_id" value="{{ detalle.id }}">
+                                            <input type="hidden" name="accion" value="menos">
+                                            <button type="submit" class="h-8 w-8 flex items-center justify-center rounded-full border border-surface-dark text-on-surface-muted-dark hover:text-white hover:border-primary transition-colors">−</button>
+                                        </form>
 
-                                        <div class="text-right">
-                                            <p class="font-medium">{{ detalle.getPrecio() is not null ? '%.2f'|format(detalle.getPrecio()) ~ ' €' : '—' }}</p>
-                                            <p class="text-sm text-on-surface-muted-dark">x {{ detalle.getCantidad() ?: 0 }}</p>
-                                        </div>
-                                    </article>
-                                {% endfor %}
-                            {% else %}
-                                <div class="p-8 text-center text-on-surface-muted-dark">Tu carrito está vacío.</div>
-                            {% endif %}
+                                        <span class="w-8 text-center font-semibold text-white">{{ detalle.cantidad }}</span>
 
-                        </div>
+                                        <form method="post" action="{{ path('app_carrito_update_cantidad') }}">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('update-cart') }}">
+                                            <input type="hidden" name="detalle_id" value="{{ detalle.id }}">
+                                            <input type="hidden" name="accion" value="mas">
+                                            <button type="submit" class="h-8 w-8 flex items-center justify-center rounded-full border border-surface-dark text-on-surface-muted-dark hover:text-white hover:border-primary transition-colors">+</button>
+                                        </form>
+                                    </div>
 
+                                    {# Total línea #}
+                                    <p class="w-20 text-right font-bold text-white">{{ (detalle.precio * detalle.cantidad)|number_format(2, ',', '.') }} €</p>
+
+                                    {# Eliminar #}
+                                    <form method="post" action="{{ path('app_carrito_remove_item') }}">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('remove-cart') }}">
+                                        <input type="hidden" name="detalle_id" value="{{ detalle.id }}">
+                                        <button type="submit" class="text-on-surface-muted-dark hover:text-red-500 transition-colors ml-2" title="Eliminar">
+                                            <svg fill="currentColor" class="h-5 w-5" viewBox="0 0 256 256">
+                                                <path d="M216,48H176V40a24,24,0,0,0-24-24H104A24,24,0,0,0,80,40v8H40a8,8,0,0,0,0,16h8V208a16,16,0,0,0,16,16H192a16,16,0,0,0,16-16V64h8a8,8,0,0,0,0-16ZM96,40a8,8,0,0,1,8-8h48a8,8,0,0,1,8,8v8H96Zm96,168H64V64H192ZM112,104v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Zm48,0v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Z"/>
+                                            </svg>
+                                        </button>
+                                    </form>
+                                </article>
+                            {% endfor %}
+                        {% else %}
+                            <div class="p-12 text-center text-on-surface-muted-dark">
+                                <svg fill="currentColor" class="h-16 w-16 mx-auto mb-4 opacity-40" viewBox="0 0 256 256">
+                                    <path d="M222.14,58.87A8,8,0,0,0,216,56H54.68L49.79,29.14A16,16,0,0,0,34.05,16H16a8,8,0,0,0,0,16h18L59.56,172.29a24,24,0,0,0,5.33,11.27,28,28,0,1,0,44.4,8.44h45.42A27.75,27.75,0,0,0,152,204a28,28,0,1,0,28-28H83.17a8,8,0,0,1-7.87-6.57L72.13,152h116a24,24,0,0,0,23.61-19.71l12.16-66.86A8,8,0,0,0,222.14,58.87Z"/>
+                                </svg>
+                                <p class="text-lg font-semibold">Tu carrito está vacío</p>
+                                <a href="{{ path('app_vinilo_index') }}" class="mt-4 inline-block text-primary hover:underline text-sm">Ver catálogo</a>
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
-                <div class="space-y-6 lg:col-span-1">
-                    <div class="rounded-lg border border-subtle-light bg-surface-light p-6 dark:border-subtle-dark dark:bg-surface-dark">
-                        <h3 class="text-lg font-semibold">Resumen del pedido</h3>
-                        <div class="mt-4 space-y-3">
+
+                {# Resumen #}
+                <div class="lg:col-span-1">
+                    <div class="rounded-lg border border-surface-dark bg-surface-dark p-6">
+                        <h3 class="text-lg font-semibold text-white">Resumen del pedido</h3>
+                        <div class="mt-4 space-y-3 text-sm">
                             <div class="flex justify-between">
-                                <span style="color: #e00000;" class="text-text-muted-light dark:text-text-muted-dark">Subtotal</span>
-                                <span id="cart-subtotal" style="color: #e00000;" class="font-medium text-text-light dark:text-text-dark">{{ '%.2f'|format(subtotal) }} €</span>
+                                <span class="text-on-surface-muted-dark">Subtotal</span>
+                                <span class="font-medium text-white">{{ subtotal|number_format(2, ',', '.') }} €</span>
                             </div>
                             <div class="flex justify-between">
-                                <span style="color: #e00000;" class="text-text-muted-light dark:text-text-muted-dark">Envío</span>
-                                {# envío fijo por ahora, ajustable en controlador o JS si se necesita #}
-                                {% set shipping = subtotal > 0 ? 5.00 : 0.00 %}
-                                <span id="cart-shipping" style="color: #e00000;" class="font-medium text-accent">{{ '%.2f'|format(shipping) }} €</span>
+                                <span class="text-on-surface-muted-dark">Envío</span>
+                                <span class="font-medium text-primary">{{ shipping > 0 ? shipping|number_format(2, ',', '.') ~ ' €' : 'Gratis' }}</span>
                             </div>
-                            <div class="border-t border-subtle-light pt-3 dark:border-subtle-dark">
+                            <div class="border-t border-background-dark pt-3">
                                 <div class="flex justify-between text-lg font-bold">
-                                    <span class="text-text-light dark:text-text-dark">Total</span>
-                                    <span id="cart-total" class="text-primary">{{ '%.2f'|format(subtotal + shipping) }} €</span>
+                                    <span class="text-white">Total</span>
+                                    <span class="text-primary">{{ (subtotal + shipping)|number_format(2, ',', '.') }} €</span>
                                 </div>
                             </div>
                         </div>
-                        <button style="background-color: #e00000;" class="mt-6 w-full rounded-lg px-5 py-3 text-base font-bold text-white shadow-sm transition-transform hover:scale-105 hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-[#e00000] focus:ring-offset-2 focus:ring-offset-background-light dark:focus:ring-offset-background-dark">
+                        <a href="#" class="mt-6 block w-full rounded-lg py-3 text-center text-base font-bold text-white shadow-sm transition-transform hover:scale-105" style="background-color: #cf6329;">
                             Proceder al pago
-                        </button>
+                        </a>
+                        <a href="{{ path('app_vinilo_index') }}" class="mt-3 block text-center text-sm text-on-surface-muted-dark hover:text-primary transition-colors">
+                            Seguir comprando
+                        </a>
                     </div>
                 </div>
+
             </div>
         </div>
     </div>

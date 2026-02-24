@@ -90,7 +90,7 @@
                                 <form method="post" action="{{ path('app_carrito_add') }}">
                                     <input type="hidden" name="vinilo_id" value="{{ vinilo.id }}">
                                     <input type="hidden" name="_token" value="{{ csrf_token('add-to-cart') }}">
-                                    <button class="w-full rounded-lg py-2 text-sm font-bold text-white transition-transform hover:scale-105" style="background-color: #e00000;">
+                                    <button type="submit" class="w-full rounded-lg py-2 text-sm font-bold text-white transition-transform hover:scale-105" style="background-color: #cf6329;">
                                         Añadir al carrito
                                     </button>
                                 </form>

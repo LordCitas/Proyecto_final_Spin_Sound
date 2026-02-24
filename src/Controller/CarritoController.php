@@ -84,8 +84,33 @@ final class CarritoController extends AbstractController
     #[Route('/demo', name: 'app_carrito_demo', methods: ['GET'])]
     public function demo(): Response
     {
-        // Pasamos un carrito vacío (no persistido) para evitar el error cuando se renderiza la plantilla de demo
         $carrito = new Carrito();
+        return $this->render('carrito/show.html.twig', [
+            'carrito' => $carrito,
+        ]);
+    }
+
+    #[Route('/mi-carrito', name: 'app_carrito_show_user', methods: ['GET'])]
+    public function showUserCarrito(Request $request, EntityManagerInterface $em): Response
+    {
+        $user    = $this->getUser();
+        $session = $request->getSession();
+        $carrito = null;
+
+        if ($user instanceof \App\Entity\Cliente) {
+            $carrito = $user->getCarrito();
+        }
+
+        if (!$carrito) {
+            $cartId = $session->get('cart_id');
+            if ($cartId) {
+                $carrito = $em->getRepository(Carrito::class)->find($cartId);
+            }
+        }
+
+        if (!$carrito) {
+            $carrito = new Carrito();
+        }
 
         return $this->render('carrito/show.html.twig', [
             'carrito' => $carrito,
@@ -95,7 +120,6 @@ final class CarritoController extends AbstractController
     #[Route('/add', name: 'app_carrito_add', methods: ['POST'])]
     public function add(Request $request, ViniloRepository $viniloRepository, EntityManagerInterface $em): Response
     {
-        // CSRF
         $token = $request->request->get('_token');
         if (!$this->isCsrfTokenValid('add-to-cart', $token)) {
             $this->addFlash('error', 'Token CSRF inválido.');
@@ -103,69 +127,50 @@ final class CarritoController extends AbstractController
         }
 
         $viniloId = $request->request->get('vinilo_id');
-        $vinilo = $viniloRepository->find($viniloId);
+        $vinilo   = $viniloRepository->find($viniloId);
         if (!$vinilo) {
             $this->addFlash('error', 'Vinilo no encontrado.');
             return $this->redirectToRoute('app_vinilo_index');
         }
 
+        $user    = $this->getUser();
         $session = $request->getSession();
-        $user = $this->getUser();
         $carrito = null;
 
-        if ($user) {
-            // Resolver la entidad Cliente desde el user (si es necesario)
-            if ($user instanceof \App\Entity\Cliente) {
-                $cliente = $user;
-            } else {
-                // intentar resolver por identificador (email)
-                $identifier = method_exists($user, 'getUserIdentifier') ? $user->getUserIdentifier() : (method_exists($user, 'getUsername') ? $user->getUsername() : null);
-                $cliente = null;
-                if ($identifier) {
-                    $usuarioRepo = $em->getRepository(\App\Entity\Usuario::class);
-                    $usuarioEntity = $usuarioRepo->findOneBy(['email' => $identifier]);
-                    if ($usuarioEntity instanceof \App\Entity\Cliente) {
-                        $cliente = $usuarioEntity;
-                    }
-                }
+        // Usuario autenticado y es Cliente
+        if ($user instanceof \App\Entity\Cliente) {
+            $carrito = $user->getCarrito();
+            if (!$carrito) {
+                $carrito = new Carrito();
+                $carrito->setCliente($user);
+                $em->persist($carrito);
+                $em->flush();
             }
-
-            if ($cliente) {
-                $carrito = $cliente->getCarrito();
-                if (!$carrito) {
-                    $carrito = new Carrito();
-                    // setCliente() maneja la relación inversa
-                    $carrito->setCliente($cliente);
-                    $em->persist($carrito);
-                }
-            }
-        }
-
-        // Si no hay usuario/cliente, usar carrito en sesión (anónimo)
-        if (!$carrito) {
+        } else {
+            // Anónimo: carrito en sesión
             $cartId = $session->get('cart_id');
             if ($cartId) {
                 $carrito = $em->getRepository(Carrito::class)->find($cartId);
             }
-
             if (!$carrito) {
                 $carrito = new Carrito();
                 $em->persist($carrito);
+                $em->flush();
+                $session->set('cart_id', $carrito->getId());
             }
         }
 
-        // Verificar si ya existe un DetalleCarrito para ese vinilo y carrito
-        $existe = null;
-        foreach ($carrito->getDetalleCarritos() as $detalle) {
-            if ($detalle->getVinilo() && $detalle->getVinilo()->getId() === $vinilo->getId()) {
-                $existe = $detalle;
+        // ¿Ya existe ese vinilo en el carrito?
+        $detalle = null;
+        foreach ($carrito->getDetalleCarritos() as $d) {
+            if ($d->getVinilo() && $d->getVinilo()->getId() === $vinilo->getId()) {
+                $detalle = $d;
                 break;
             }
         }
 
-        if ($existe) {
-            $cantidadActual = $existe->getCantidad() ?? 0;
-            $existe->setCantidad($cantidadActual + 1);
+        if ($detalle) {
+            $detalle->setCantidad(($detalle->getCantidad() ?? 0) + 1);
         } else {
             $detalle = new DetalleCarrito();
             $detalle->setCantidad(1);
@@ -173,24 +178,58 @@ final class CarritoController extends AbstractController
             $detalle->setVinilo($vinilo);
             $detalle->setCarrito($carrito);
             $em->persist($detalle);
-            $carrito->addDetalleCarrito($detalle);
         }
 
         $em->flush();
 
-        // Guardar el id del carrito en sesión para usuarios anónimos
-        if (!$user) {
-            $session->set('cart_id', $carrito->getId());
-        }
+        $this->addFlash('success', '"' . $vinilo->getTitulo() . '" añadido al carrito.');
 
-        $this->addFlash('success', 'Vinilo añadido al carrito.');
-
-        // Redirigir a la página anterior o al índice de vinilos
         $referer = $request->headers->get('referer');
-        if ($referer) {
-            return $this->redirect($referer);
+        return $referer ? $this->redirect($referer) : $this->redirectToRoute('app_vinilo_index');
+    }
+
+    #[Route('/update-cantidad', name: 'app_carrito_update_cantidad', methods: ['POST'])]
+    public function updateCantidad(Request $request, EntityManagerInterface $em): Response
+    {
+        if (!$this->isCsrfTokenValid('update-cart', $request->request->get('_token'))) {
+            $this->addFlash('error', 'Token inválido.');
+            return $this->redirectToRoute('app_carrito_show_user');
         }
 
-        return $this->redirectToRoute('app_vinilo_index');
+        $detalleId = $request->request->get('detalle_id');
+        $accion    = $request->request->get('accion');
+        $detalle   = $em->getRepository(DetalleCarrito::class)->find($detalleId);
+
+        if ($detalle) {
+            $nueva = ($detalle->getCantidad() ?? 1) + ($accion === 'mas' ? 1 : -1);
+            if ($nueva <= 0) {
+                $em->remove($detalle);
+            } else {
+                $detalle->setCantidad($nueva);
+            }
+            $em->flush();
+        }
+
+        return $this->redirectToRoute('app_carrito_show_user');
+    }
+
+    #[Route('/remove-item', name: 'app_carrito_remove_item', methods: ['POST'])]
+    public function removeItem(Request $request, EntityManagerInterface $em): Response
+    {
+        if (!$this->isCsrfTokenValid('remove-cart', $request->request->get('_token'))) {
+            $this->addFlash('error', 'Token inválido.');
+            return $this->redirectToRoute('app_carrito_show_user');
+        }
+
+        $detalleId = $request->request->get('detalle_id');
+        $detalle   = $em->getRepository(DetalleCarrito::class)->find($detalleId);
+
+        if ($detalle) {
+            $em->remove($detalle);
+            $em->flush();
+            $this->addFlash('success', 'Producto eliminado del carrito.');
+        }
+
+        return $this->redirectToRoute('app_carrito_show_user');
     }
 }
