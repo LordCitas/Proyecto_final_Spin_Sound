@@ -29,7 +29,11 @@
                     <span class="text-on-surface-dark">{{ genero }}</span>
                 </div>
                 <div class="relative aspect-[1/1] w-full overflow-hidden rounded-xl shadow-lg bg-surface-dark">
-                    <div class="h-full w-full bg-cover bg-center" style="background-image: url('{{ asset('img/kpop-demon-hunters.webp') }}');"></div>
+                    {% if vinilo.imagen %}
+                        <img src="{{ vinilo.imagen }}" alt="{{ vinilo.titulo }}" class="h-full w-full object-cover object-center">
+                    {% else %}
+                        <div class="h-full w-full bg-cover bg-center" style="background-image: url('{{ asset('img/kpop-demon-hunters.webp') }}');"></div>
+                    {% endif %}
                 </div>
 
 

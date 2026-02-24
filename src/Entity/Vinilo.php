@@ -55,6 +55,9 @@ class Vinilo
     #[ORM\OneToMany(targetEntity: DetalleCarrito::class, mappedBy: 'vinilo')]
     private Collection $detalleCarritos;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $imagen = null;
+
     public function __construct()
     {
         $this->detallePedidos = new ArrayCollection();
@@ -238,6 +241,18 @@ class Vinilo
                 $detalleCarrito->setVinilo(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getImagen(): ?string
+    {
+        return $this->imagen;
+    }
+
+    public function setImagen(?string $imagen): static
+    {
+        $this->imagen = $imagen;
 
         return $this;
     }
