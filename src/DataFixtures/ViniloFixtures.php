@@ -25,7 +25,8 @@ class ViniloFixtures extends Fixture
             'año'         => 1969,
             'precio'      => 34.99,
             'stock'       => 10,
-            'discogsId'   => 666397,
+            'discogsId'   => 24047,
+            'type'        => 'masters',
         ],
         [
             'titulo'      => 'The Dark Side Of The Moon',
@@ -35,7 +36,8 @@ class ViniloFixtures extends Fixture
             'año'         => 1973,
             'precio'      => 39.99,
             'stock'       => 8,
-            'discogsId'   => 9287809,
+            'discogsId'   => 10362,
+            'type'        => 'masters',
         ],
         [
             'titulo'      => 'Nevermind',
@@ -45,7 +47,8 @@ class ViniloFixtures extends Fixture
             'año'         => 1991,
             'precio'      => 27.99,
             'stock'       => 20,
-            'discogsId'   => 7097051,
+            'discogsId'   => 13814,
+            'type'        => 'masters',
         ],
         [
             'titulo'      => 'Back In Black',
@@ -55,7 +58,8 @@ class ViniloFixtures extends Fixture
             'año'         => 1980,
             'precio'      => 29.99,
             'stock'       => 14,
-            'discogsId'   => 3771485,
+            'discogsId'   => 8471,
+            'type'        => 'masters',
         ],
         [
             'titulo'      => 'Led Zeppelin IV',
@@ -65,7 +69,8 @@ class ViniloFixtures extends Fixture
             'año'         => 1971,
             'precio'      => 32.99,
             'stock'       => 9,
-            'discogsId'   => 2247887,
+            'discogsId'   => 1015465,
+            'type'        => 'masters',
         ],
 
         // ── POP (5) ───────────────────────────────────────────────
@@ -77,7 +82,8 @@ class ViniloFixtures extends Fixture
             'año'         => 2025,
             'precio'      => 29.99,
             'stock'       => 15,
-            'discogsId'   => 35255740,
+            'discogsId'   => 3925902,
+            'type'        => 'masters',
         ],
         [
             'titulo'      => 'Bad',
@@ -87,7 +93,8 @@ class ViniloFixtures extends Fixture
             'año'         => 1987,
             'precio'      => 26.99,
             'stock'       => 12,
-            'discogsId'   => 2506673,
+            'discogsId'   => 8517,
+            'type'        => 'masters',
         ],
         [
             'titulo'      => '1989',
@@ -97,7 +104,8 @@ class ViniloFixtures extends Fixture
             'año'         => 2014,
             'precio'      => 31.99,
             'stock'       => 18,
-            'discogsId'   => 6275798,
+            'discogsId'   => 750386,
+            'type'        => 'masters',
         ],
         [
             'titulo'      => 'Lemonade',
@@ -107,7 +115,8 @@ class ViniloFixtures extends Fixture
             'año'         => 2016,
             'precio'      => 34.99,
             'stock'       => 10,
-            'discogsId'   => 8559537,
+            'discogsId'   => 992029,
+            'type'        => 'masters',
         ],
         [
             'titulo'      => 'Future Nostalgia',
@@ -117,7 +126,8 @@ class ViniloFixtures extends Fixture
             'año'         => 2020,
             'precio'      => 28.99,
             'stock'       => 22,
-            'discogsId'   => 16015688,
+            'discogsId'   => 1705638,
+            'type'        => 'masters',
         ],
 
         // ── JAZZ (5) ──────────────────────────────────────────────
@@ -129,7 +139,8 @@ class ViniloFixtures extends Fixture
             'año'         => 1959,
             'precio'      => 36.99,
             'stock'       => 7,
-            'discogsId'   => 1672525,
+            'discogsId'   => 5460,
+            'type'        => 'masters',
         ],
         [
             'titulo'      => 'A Love Supreme',
@@ -139,7 +150,8 @@ class ViniloFixtures extends Fixture
             'año'         => 1965,
             'precio'      => 33.99,
             'stock'       => 6,
-            'discogsId'   => 608814,
+            'discogsId'   => 32287,
+            'type'        => 'masters',
         ],
         [
             'titulo'      => 'Time Out',
@@ -149,7 +161,8 @@ class ViniloFixtures extends Fixture
             'año'         => 1959,
             'precio'      => 29.99,
             'stock'       => 9,
-            'discogsId'   => 725493,
+            'discogsId'   => 34081,
+            'type'        => 'masters',
         ],
         [
             'titulo'      => 'Getz / Gilberto',
@@ -159,7 +172,8 @@ class ViniloFixtures extends Fixture
             'año'         => 1964,
             'precio'      => 27.99,
             'stock'       => 11,
-            'discogsId'   => 1285696,
+            'discogsId'   => 85178,
+            'type'        => 'masters',
         ],
         [
             'titulo'      => 'Mingus Ah Um',
@@ -169,7 +183,8 @@ class ViniloFixtures extends Fixture
             'año'         => 1959,
             'precio'      => 31.99,
             'stock'       => 8,
-            'discogsId'   => 823820,
+            'discogsId'   => 65014,
+            'type'        => 'masters',
         ],
 
         // ── CLÁSICA (5) ───────────────────────────────────────────
@@ -181,7 +196,8 @@ class ViniloFixtures extends Fixture
             'año'         => 1963,
             'precio'      => 38.99,
             'stock'       => 5,
-            'discogsId'   => 1259357,
+            'discogsId'   => 276504,
+            'type'        => 'masters',
         ],
         [
             'titulo'      => 'Bach: Goldberg Variations',
@@ -191,7 +207,8 @@ class ViniloFixtures extends Fixture
             'año'         => 1981,
             'precio'      => 35.99,
             'stock'       => 6,
-            'discogsId'   => 2011834,
+            'discogsId'   => 261784,
+            'type'        => 'masters',
         ],
         [
             'titulo'      => 'Mozart: Requiem',
@@ -201,7 +218,8 @@ class ViniloFixtures extends Fixture
             'año'         => 1971,
             'precio'      => 32.99,
             'stock'       => 7,
-            'discogsId'   => 1545202,
+            'discogsId'   => 233186,
+            'type'        => 'masters',
         ],
         [
             'titulo'      => 'Vivaldi: The Four Seasons',
@@ -211,7 +229,8 @@ class ViniloFixtures extends Fixture
             'año'         => 1989,
             'precio'      => 29.99,
             'stock'       => 10,
-            'discogsId'   => 2218509,
+            'discogsId'   => 1141041,
+            'type'        => 'masters',
         ],
         [
             'titulo'      => 'Debussy: Clair de Lune & Other Piano Works',
@@ -221,7 +240,8 @@ class ViniloFixtures extends Fixture
             'año'         => 1954,
             'precio'      => 27.99,
             'stock'       => 8,
-            'discogsId'   => 3421876,
+            'discogsId'   => 3392098,
+            'type'        => 'masters',
         ],
 
         // ── FUNK / SOUL (5) ───────────────────────────────────────
@@ -233,7 +253,8 @@ class ViniloFixtures extends Fixture
             'año'         => 1982,
             'precio'      => 24.99,
             'stock'       => 12,
-            'discogsId'   => 2911293,
+            'discogsId'   => 8883,
+            'type'        => 'masters',
         ],
         [
             'titulo'      => "What's Going On",
@@ -243,7 +264,8 @@ class ViniloFixtures extends Fixture
             'año'         => 1971,
             'precio'      => 30.99,
             'stock'       => 9,
-            'discogsId'   => 580554,
+            'discogsId'   => 66631,
+            'type'        => 'masters',
         ],
         [
             'titulo'      => 'Off The Wall',
@@ -253,7 +275,8 @@ class ViniloFixtures extends Fixture
             'año'         => 1979,
             'precio'      => 22.99,
             'stock'       => 14,
-            'discogsId'   => 1506510,
+            'discogsId'   => 435524,
+            'type'        => 'masters',
         ],
         [
             'titulo'      => 'I Never Loved A Man The Way I Love You',
@@ -263,7 +286,8 @@ class ViniloFixtures extends Fixture
             'año'         => 1967,
             'precio'      => 28.99,
             'stock'       => 7,
-            'discogsId'   => 917862,
+            'discogsId'   => 122933,
+            'type'        => 'masters',
         ],
         [
             'titulo'      => 'Innervisions',
@@ -273,7 +297,8 @@ class ViniloFixtures extends Fixture
             'año'         => 1973,
             'precio'      => 26.99,
             'stock'       => 11,
-            'discogsId'   => 382766,
+            'discogsId'   => 86466,
+            'type'        => 'masters',
         ],
     ];
 
@@ -315,7 +340,14 @@ class ViniloFixtures extends Fixture
 
             // Obtener imagen desde Discogs
             if ($data['discogsId']) {
-                $releaseData = $this->discogsService->fetchRelease($data['discogsId']);
+                $type = $data['type'] ?? 'releases';
+
+                if ($type === 'masters') {
+                    $releaseData = $this->discogsService->fetchMaster($data['discogsId']);
+                } else {
+                    $releaseData = $this->discogsService->fetchRelease($data['discogsId']);
+                }
+
                 $imageUrl = $this->discogsService->getImageUrl($releaseData);
 
                 if ($imageUrl) {
