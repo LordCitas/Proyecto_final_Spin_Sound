@@ -218,46 +218,46 @@
 </footer>
 
 <script>
-    // --- 1. Script para Menú Móvil ---
+    // --- 1. Menú Móvil ---
     (function() {
-        var btn = document.getElementById('mobile-menu-button');
-        var menu = document.getElementById('mobile-menu');
+        const btn = document.getElementById('mobile-menu-button');
+        const menu = document.getElementById('mobile-menu');
         if (!btn || !menu) return;
-        btn.addEventListener('click', function() {
-            var isHidden = menu.classList.contains('hidden');
-            if (isHidden) {
-                menu.classList.remove('hidden');
-                btn.setAttribute('aria-expanded', 'true');
-            } else {
-                menu.classList.add('hidden');
-                btn.setAttribute('aria-expanded', 'false');
-            }
+        btn.addEventListener('click', () => {
+            const isHidden = menu.classList.contains('hidden');
+            menu.classList.toggle('hidden', !isHidden);
+            btn.setAttribute('aria-expanded', isHidden ? 'true' : 'false');
         });
     })();
 
-    // --- 2. Sistema de Notificaciones Toast ---
+    // --- 2. Sistema de Notificaciones Toast (Mejorado para nombres largos) ---
     function showToast(message) {
         const container = document.getElementById('toast-container');
+        if (!container) return;
+
         const toast = document.createElement('div');
-        toast.className = `flex items-center gap-3 bg-[#1a1f23] border-l-4 border-[#e00000] text-white px-6 py-4 rounded-lg shadow-2xl translate-x-full opacity-0 transition-all duration-500 ease-out min-w-[300px]`;
+        // Usamos max-w-sm y w-auto para que quepan nombres de discos largos
+        toast.className = `flex items-center gap-3 bg-[#1a1f23] border-l-4 border-[#e00000] text-white px-6 py-4 rounded-lg shadow-2xl translate-x-full opacity-0 transition-all duration-500 ease-out max-w-sm w-auto`;
         toast.innerHTML = `
             <span class="material-symbols-outlined text-[#e00000]">check_circle</span>
             <div class="flex flex-col">
-                <p class="font-bold text-sm tracking-wide">¡Añadido!</p>
+                <p class="font-bold text-sm tracking-wide">¡Actualizado!</p>
                 <p class="text-xs text-[#a9aeb2]">${message}</p>
             </div>
         `;
         container.appendChild(toast);
-        setTimeout(() => { toast.classList.remove('translate-x-full', 'opacity-0'); }, 100);
+
+        // Animación de entrada
+        setTimeout(() => toast.classList.remove('translate-x-full', 'opacity-0'), 100);
+
+        // Auto-eliminar
         setTimeout(() => {
             toast.classList.add('translate-x-full', 'opacity-0');
             setTimeout(() => toast.remove(), 500);
-        }, 3500);
+        }, 4000);
     }
 
-    // --- 3. Lógica de Persistencia y Sincronización (CORREGIDA) ---
-
-    // Esta función actualiza el contador y lo guarda para el botón "Atrás"
+    // --- 3. Gestión del Contador (Badge) y LocalStorage ---
     function updateCartBadge(count) {
         const badge = document.getElementById('cart-badge');
         if (badge) {
@@ -266,74 +266,78 @@
         }
     }
 
-    // Al cargar la página, mandamos el dato de Symfony a LocalStorage.
-    // Así, si has borrado algo en la página de carrito, la memoria se actualiza.
-    document.addEventListener('DOMContentLoaded', function() {
+    // Sincronizar al cargar
+    document.addEventListener('DOMContentLoaded', () => {
         const badge = document.getElementById('cart-badge');
-        if (badge) {
-            localStorage.setItem('spin_sound_cart_count', badge.innerText);
-        }
+        if (badge) localStorage.setItem('spin_sound_cart_count', badge.innerText);
     });
 
-    // Cuando vuelves atrás, leemos la memoria
-    window.addEventListener('pageshow', function(event) {
+    // Sincronizar al volver atrás en el navegador
+    window.addEventListener('pageshow', () => {
         const badge = document.getElementById('cart-badge');
         const savedCount = localStorage.getItem('spin_sound_cart_count');
-        if (badge && savedCount !== null) {
-            badge.innerText = savedCount;
-        }
+        if (badge && savedCount !== null) badge.innerText = savedCount;
     });
 
-    // --- 4. Interceptor para añadir al carrito sin recargar ---
+    // --- 4. Interceptor Universal AJAX (Añadir, Eliminar, Cantidad) ---
     document.addEventListener('submit', async function(e) {
-        if (e.target && e.target.action && e.target.action.includes('carrito/add')) {
+        const form = e.target;
+        const action = form.action || '';
+
+        // Detectar si el formulario es una acción de carrito
+        if (action.includes('carrito/add') || action.includes('carrito/update') || action.includes('carrito/remove')) {
             e.preventDefault();
 
-            const form = e.target;
-            const formData = new FormData(form);
+            // Intentar capturar el nombre del vinilo para el mensaje
+            let productName = "Producto";
+            if (action.includes('add')) {
+                // Busca el título (h1, h2 o h3) dentro del contenedor más cercano (card o ficha)
+                const container = form.closest('article, section, main, div[class*="container"]');
+                const titleElement = container ? container.querySelector('h1, h2, h3') : null;
+                if (titleElement) productName = titleElement.innerText.trim();
+            }
 
             try {
-                const response = await fetch(form.action, {
+                const response = await fetch(action, {
                     method: 'POST',
-                    body: formData,
+                    body: new FormData(form),
                     headers: { 'X-Requested-With': 'XMLHttpRequest' }
                 });
 
                 if (response.ok) {
-                    const badge = document.getElementById('cart-badge');
-                    let newCount = (parseInt(badge.innerText) || 0) + 1;
-
-                    // Actualizamos visualmente y guardamos en memoria
-                    updateCartBadge(newCount);
-
-                    // Animación de rebote
-                    badge.style.transform = 'scale(1.4)';
-                    setTimeout(() => { badge.style.transform = 'scale(1)'; }, 200);
-
-                    // Mensaje Toast
-                    let message = 'Producto añadido al carrito.';
-                    try {
-                        const data = await response.json();
-                        if (data.message) message = data.message;
-                    } catch (errorJSON) {
-                        const productName = form.closest('article, main')?.querySelector('h1, h2, h3')?.innerText;
-                        if (productName) message = `"${productName}" añadido al carrito.`;
+                    // SI ESTAMOS EN LA VISTA DEL CARRITO:
+                    // Refrescamos la página pero REEMPLAZANDO el historial (evita el bug de "doble atrás")
+                    if (window.location.pathname.includes('/carrito')) {
+                        window.location.replace(window.location.href);
+                        return;
                     }
-                    showToast(message);
-                } else {
-                    showToast('Hubo un problema al añadir el producto.');
+
+                    // SI ESTAMOS EN OTRA PÁGINA (Añadiendo desde catálogo):
+                    const badge = document.getElementById('cart-badge');
+                    let currentCount = parseInt(badge.innerText) || 0;
+
+                    if (action.includes('add')) {
+                        updateCartBadge(currentCount + 1);
+
+                        // Efecto visual de rebote en el badge
+                        badge.style.transform = 'scale(1.5)';
+                        setTimeout(() => badge.style.transform = 'scale(1)', 200);
+
+                        showToast(`"${productName}" añadido.`);
+                    } else {
+                        showToast('Carrito actualizado.');
+                    }
                 }
             } catch (error) {
-                console.error('Error al enviar la petición AJAX:', error);
+                console.error('Error en la petición AJAX:', error);
             }
         }
     });
 
-    // Listener para mensajes flash de Symfony
+    // Soporte para mensajes Flash de Symfony
     {% for message in app.flashes('success') %}
-    showToast('{{ message }}');
+    showToast('{{ message|e("js") }}');
     {% endfor %}
 </script>
-
 </body>
 </html>
