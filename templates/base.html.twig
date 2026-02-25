@@ -53,6 +53,7 @@
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 
     <style>
+
         /* Forzar fondo negro y texto blanco por defecto */
         html, body { background-color: #000 !important; color: #fff !important; }
         /* Sobrescribir algunas clases Tailwind usadas en plantillas para que no muestren 'fondo claro' */
@@ -163,12 +164,6 @@
 
 {% block body %}
     {# Contenido de la página (cada plantilla rellenará este bloque) #}
-    <main class="min-h-screen">
-        <div class="container mx-auto px-4 py-8">
-            <h1 class="text-xl font-bold">Contenido</h1>
-            <p>Añade tu contenido en los templates que extiendan base.html.twig</p>
-        </div>
-    </main>
 {% endblock %}
 
 <footer class="bg-surface-light dark:bg-surface-dark border-t border-white-200 dark:border-white-800">
