@@ -7,6 +7,9 @@
 {% endblock %}
 
 {% block body %}
+    <style>
+
+    </style>
 <main class="flex-1">
 
     {# Hero #}
@@ -31,7 +34,9 @@
             <div>
                 <h2 class="text-3xl font-bold text-white mb-6">¿Quiénes somos?</h2>
                 <p class="text-on-surface-muted-dark leading-relaxed mb-4">
-                    Spin&amp;Sound nació en 2015 de la mano de un grupo de amigos unidos por una pasión común: la música en vinilo. Lo que empezó como un pequeño local en el centro de la ciudad se ha convertido en una de las tiendas de referencia para coleccionistas y amantes del sonido analógico.
+                    En 2026, un grupo de amigos decidió que el mundo digital iba demasiado rápido. Echábamos de menos el ritual: sacar el disco de la funda, colocar la aguja y esperar ese pequeño crack que anuncia que algo bueno va a pasar. Así nació Spin&Sound.
+
+                    Lo que empezó en un rincón del centro de la ciudad, hoy es el refugio de quienes saben que la música no solo se escucha, se toca. Con más de 5.000 tesoros en nuestras estanterías —desde joyas de segunda mano con historia hasta ediciones limitadas que no querrás abrir— y el merchandising que todo fan merece, seguimos girando al mismo ritmo que nuestros platos: con pasión, sin filtros y en analógico.
                 </p>
                 <p class="text-on-surface-muted-dark leading-relaxed">
                     Hoy contamos con más de <span class="text-primary font-semibold">5.000 referencias</span> en catálogo, entre vinilos nuevos, ediciones limitadas y segunda mano, además de una selección de merchandising exclusivo de tus artistas favoritos.
@@ -43,6 +48,43 @@
             </div>
         </section>
 
+
+
+        <section class="w-full my-12">
+            {# Estilos forzados aquí mismo para que nada los sobreescriba #}
+            <style>
+                @keyframes carruselFinal {
+                    0%, 20% { opacity: 1; z-index: 30; }
+                    25%, 100% { opacity: 0; z-index: 1; }
+                }
+
+                .img-vinilo {
+                    position: absolute !important;
+                    top: 0 !important;
+                    left: 0 !important;
+                    width: 100% !important;
+                    height: 100% !important;
+                    object-fit: cover !important;
+                    opacity: 0;
+                    animation: carruselFinal 12s infinite linear !important;
+                }
+
+                /* Delays específicos para que se turnen cada 3 segundos */
+                .delay-1 { animation-delay: 0s !important; }
+                .delay-2 { animation-delay: 3s !important; }
+                .delay-3 { animation-delay: 6s !important; }
+                .delay-4 { animation-delay: 9s !important; }
+            </style>
+
+            <div style="position: relative; width: 100%; max-width: 800px; height: 450px; margin: 0 auto; overflow: hidden; background: #000; border-radius: 12px; border: 1px solid #333;">
+
+                <img class="img-vinilo delay-1" src="{{ asset('img/genteVinilos.jpg') }}" alt="Gente 1">
+                <img class="img-vinilo delay-2" src="{{ asset('img/genteVinilos1.jpg') }}" alt="Gente 2">
+                <img class="img-vinilo delay-3" src="{{ asset('img/genteVinilos2.jpg') }}" alt="Gente 3">
+                <img class="img-vinilo delay-4" src="{{ asset('img/genteVinilos3.jpg') }}" alt="Gente 4">
+
+            </div>
+        </section>
         {# Cifras #}
         <section class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
             <div class="rounded-xl bg-surface-dark p-8">
@@ -50,8 +92,8 @@
                 <p class="mt-2 text-sm text-on-surface-muted-dark">Referencias en catálogo</p>
             </div>
             <div class="rounded-xl bg-surface-dark p-8">
-                <p class="text-4xl font-bold text-primary">+10</p>
-                <p class="mt-2 text-sm text-on-surface-muted-dark">Años de experiencia</p>
+                <p class="text-4xl font-bold text-primary">+1000</p>
+                <p class="mt-2 text-sm text-on-surface-muted-dark">Reseñas positivas</p>
             </div>
             <div class="rounded-xl bg-surface-dark p-8">
                 <p class="text-4xl font-bold text-primary">+20K</p>
@@ -62,7 +104,6 @@
                 <p class="mt-2 text-sm text-on-surface-muted-dark">Géneros musicales</p>
             </div>
         </section>
-
         {# Misión y valores #}
         <section class="bg-black py-20 px-4">
             <div class="max-w-7xl mx-auto">
