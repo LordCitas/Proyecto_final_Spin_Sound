@@ -6,7 +6,7 @@
     <title>{% block title %}Mi aplicación{% endblock %}</title>
     <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('img/logo-spin-sound-circular.png') }}?v=1">
     <link href="https://fonts.googleapis.com" rel="preconnect" />
-    <link crossorigin href="https://fonts.gstatic.com/" rel="preconnect" />
+    <link crossorigin href="https://fonts.gstatic.cosm/" rel="preconnect" />
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
 
@@ -89,10 +89,12 @@
   <div class="container mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex h-20 items-center justify-between">
       <div class="flex items-center gap-8">
-        <a class="flex items-center gap-3" href="{{ path('app_home') }}">
-          {# Logo real en public/img (encontrado: public/img/logo-spin-sound-circular.png) #}
-          <img src="{{ asset('img/logo-spin-sound-circular.png') }}" alt="Viniland logo" class="h-20 w-auto object-contain" />
-        </a>
+          <a class="flex items-center gap-3" href="{{ path('app_home') }}">
+              {# Añadimos transition-transform (para suavidad) y hover:scale-110 (para agrandar) #}
+              <img src="{{ asset('img/logohori.png') }}"
+                   alt="Viniland logo"
+                   class="h-[115px] w-auto object-contain transition-transform duration-300 ease-in-out hover:scale-110" />
+          </a>
           <nav class="hidden lg:flex items-csenter gap-8">
               <a class="text-lg font-bold uppercase tracking-wider hover:text-rojo transition-all duration-200"
                  href="{{ path('app_vinilo_index') }}"
