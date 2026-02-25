@@ -12,6 +12,7 @@ class DiscogsService
     public function __construct(
         private readonly HttpClientInterface $client,
         private readonly string $token,
+        private readonly string $projectDir = '',
         private readonly ?LoggerInterface $logger = null,
     ) {}
 
@@ -32,7 +33,7 @@ class DiscogsService
                 'query'   => [
                     'artist' => $artista,
                     'title'  => $titulo,
-                    'type'   => 'release',
+                    'type'   => 'masters',
                     'per_page' => 1,
                 ],
             ]);
@@ -56,10 +57,10 @@ class DiscogsService
     /**
      * Obtiene los detalles completos de un release por su ID de Discogs.
      */
-    public function fetchRelease(int $id): ?array
+    public function fetchRelease(int $id, string $type = 'releases'): ?array
     {
         try {
-            $response = $this->client->request('GET', self::BASE_URL . '/releases/' . $id, [
+            $response = $this->client->request('GET', self::BASE_URL . '/' . $type . '/' . $id, [
                 'headers' => $this->headers(),
             ]);
 
@@ -121,6 +122,51 @@ class DiscogsService
         }
     }
 
+    /**
+     * Descarga una imagen de Discogs y la guarda en public/img/vinilos/.
+     * Si ya existe el archivo local, no la vuelve a descargar.
+     * Devuelve la ruta relativa pública (ej: /img/vinilos/discogs_24047.jpeg) o null.
+     */
+    public function downloadImage(string $url, string $filename): ?string
+    {
+        $dir = $this->projectDir . '/public/img/vinilos/';
+
+        if (!is_dir($dir)) {
+            mkdir($dir, 0775, true);
+        }
+
+        $localPath = $dir . $filename;
+
+        // Si ya existe, no descargar de nuevo
+        if (file_exists($localPath)) {
+            return '/img/vinilos/' . $filename;
+        }
+
+        $context = stream_context_create([
+            'http' => [
+                'header'  => "User-Agent: SpinSoundApp/1.0\r\nAuthorization: Discogs token=" . $this->token . "\r\n",
+                'timeout' => 15,
+            ],
+        ]);
+
+        $imageData = @file_get_contents($url, false, $context);
+
+        if ($imageData === false) {
+            $this->logger?->warning('No se pudo descargar la imagen', ['url' => $url]);
+            return null;
+        }
+
+        file_put_contents($localPath, $imageData);
+        $this->logger?->info('Imagen guardada localmente', ['path' => $localPath]);
+
+        return '/img/vinilos/' . $filename;
+    }
+
+    public function getProjectDir(): string
+    {
+        return $this->projectDir;
+    }
+
     private function headers(): array
     {
         $headers = [
@@ -134,21 +180,5 @@ class DiscogsService
         }
 
         return $headers;
-    }
-
-    /**
-     * Obtiene los detalles completos de un master por su ID de Discogs.
-     */
-    public function fetchMaster(int $id): ?array
-    {
-        try {
-            $response = $this->client->request('GET', self::BASE_URL . '/masters/' . $id, [
-                'headers' => $this->headers(),
-            ]);
-
-            return $response->toArray();
-        } catch (\Throwable $e) {
-            return null;
-        }
     }
 }

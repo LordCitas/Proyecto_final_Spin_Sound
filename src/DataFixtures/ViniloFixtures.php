@@ -58,7 +58,7 @@ class ViniloFixtures extends Fixture
             'año'         => 1980,
             'precio'      => 29.99,
             'stock'       => 14,
-            'discogsId'   => 8471,
+            'discogsId'   => 35396,
             'type'        => 'masters',
         ],
         [
@@ -197,7 +197,7 @@ class ViniloFixtures extends Fixture
             'precio'      => 38.99,
             'stock'       => 5,
             'discogsId'   => 276504,
-            'type'        => 'masters',
+            'type'        => 'releases',
         ],
         [
             'titulo'      => 'Bach: Goldberg Variations',
@@ -324,45 +324,67 @@ class ViniloFixtures extends Fixture
                 $manager->flush();
             }
 
-            // --- Vinilo (evitar duplicados) ---
-            $existente = $manager->getRepository(Vinilo::class)->findOneBy(['titulo' => $data['titulo']]);
-            if ($existente) {
-                echo "⏭️  Ya existe: {$data['titulo']}, saltando...\n";
-                continue;
+            // --- Vinilo (crear o reutilizar el existente) ---
+            $vinilo = $manager->getRepository(Vinilo::class)->findOneBy(['titulo' => $data['titulo']]);
+            $esNuevo = false;
+            if (!$vinilo) {
+                $vinilo = new Vinilo();
+                $vinilo->setTitulo($data['titulo']);
+                $vinilo->setFechaLanzamiento(new \DateTime("{$data['año']}-01-01"));
+                $vinilo->setPrecio($data['precio']);
+                $vinilo->setStock($data['stock']);
+                $vinilo->setDiscogsId($data['discogsId']);
+                $artista->addVinilo($vinilo);
+                $genero->addGeneroVinilo($vinilo);
+                $manager->persist($vinilo);
+                $esNuevo = true;
             }
 
-            $vinilo = new Vinilo();
-            $vinilo->setTitulo($data['titulo']);
-            $vinilo->setFechaLanzamiento(new \DateTime("{$data['año']}-01-01"));
-            $vinilo->setPrecio($data['precio']);
-            $vinilo->setStock($data['stock']);
-            $vinilo->setDiscogsId($data['discogsId']);
-
-            // Obtener imagen desde Discogs
+            // Descargar imagen localmente (siempre, para actualizar los existentes)
             if ($data['discogsId']) {
-                $releaseData = $this->discogsService->fetchRelease($data['discogsId']);
-                if (!$releaseData) {
-                    echo "⚠️  Discogs no devolvió datos para releaseId {$data['discogsId']} ({$data['titulo']}).\n";
-                } else {
-                    $imageUrl = $this->discogsService->getImageUrl($releaseData);
+                $imagenActual = $vinilo->getImagen();
+                $extension    = 'jpeg';
+                $filename     = 'discogs_' . $data['discogsId'] . '.' . $extension;
+                $rutaLocal    = '/img/vinilos/' . $filename;
+                $archivoExiste = file_exists($this->discogsService->getProjectDir() . '/public' . $rutaLocal);
 
-                    if ($imageUrl) {
-                        $vinilo->setImagen($imageUrl);
-                        echo "🖼️  Imagen obtenida para: {$data['titulo']} ({$imageUrl})\n";
+                if ($archivoExiste) {
+                    // El archivo ya está en disco — solo asegurarse de que la BD apunta a él
+                    if ($imagenActual !== $rutaLocal) {
+                        $vinilo->setImagen($rutaLocal);
+                        echo "🔗  BD actualizada con imagen local: {$rutaLocal} ({$data['titulo']})\n";
                     } else {
-                        echo "⚠️  No se encontró imagen en los datos de Discogs para releaseId {$data['discogsId']} ({$data['titulo']}).\n";
+                        echo "✅  Imagen ya local y BD correcta para: {$data['titulo']}\n";
                     }
-                }
+                } else {
+                    // No existe en disco — descargar de Discogs
+                    $releaseData = $this->discogsService->fetchRelease($data['discogsId'], $data['type'] ?? 'masters');
+                    if (!$releaseData) {
+                        echo "⚠️  Discogs no devolvió datos para releaseId {$data['discogsId']} ({$data['titulo']}).\n";
+                    } else {
+                        $imageUrl = $this->discogsService->getImageUrl($releaseData);
 
-                // Pausa corta para evitar alcanzar límites de la API
-                usleep(150000); // 150ms
+                        if ($imageUrl) {
+                            $ext      = pathinfo(parse_url($imageUrl, PHP_URL_PATH), PATHINFO_EXTENSION) ?: 'jpeg';
+                            $filename = 'discogs_' . $data['discogsId'] . '.' . $ext;
+                            $localPath = $this->discogsService->downloadImage($imageUrl, $filename);
+
+                            if ($localPath) {
+                                $vinilo->setImagen($localPath);
+                                echo "🖼️  Imagen guardada localmente: {$localPath}\n";
+                            } else {
+                                echo "⚠️  No se pudo descargar la imagen para: {$data['titulo']}\n";
+                            }
+                        } else {
+                            echo "⚠️  Sin imagen en Discogs para: {$data['titulo']}\n";
+                        }
+                    }
+
+                    usleep(300000); // 300ms para no superar el límite de la API
+                }
             }
 
-            $artista->addVinilo($vinilo);
-            $genero->addGeneroVinilo($vinilo);
-
-            $manager->persist($vinilo);
-            echo "✅  Añadido: {$data['titulo']} ({$data['año']})\n";
+            echo ($esNuevo ? "➕  Añadido" : "🔄  Actualizado") . ": {$data['titulo']}\n";
         }
 
         $manager->flush();

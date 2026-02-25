@@ -186,7 +186,23 @@ final class CarritoController extends AbstractController
 
         $referer = $request->headers->get('referer');
         return $referer ? $this->redirect($referer) : $this->redirectToRoute('app_vinilo_index');
+
+        $em->flush();
+
+        // NUEVA LÓGICA PARA EVITAR EL "DOBLE ATRÁS"
+        if ($request->isXmlHttpRequest()) {
+            return $this->json([
+                'status' => 'success',
+                'message' => '"' . $vinilo->getTitulo() . '" añadido al carrito.',
+                'cartCount' => count($carrito->getDetalleCarritos()) // Opcional para actualizar el badge
+            ]);
+        }
+
+        $this->addFlash('success', '"' . $vinilo->getTitulo() . '" añadido al carrito.');
+        $referer = $request->headers->get('referer');
+        return $referer ? $this->redirect($referer) : $this->redirectToRoute('app_vinilo_index');
     }
+
 
     #[Route('/update-cantidad', name: 'app_carrito_update_cantidad', methods: ['POST'])]
     public function updateCantidad(Request $request, EntityManagerInterface $em): Response
