@@ -53,7 +53,6 @@
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 
     <style>
-
         /* Forzar fondo negro y texto blanco por defecto */
         html, body {
             background-color: #000 !important;
@@ -106,8 +105,7 @@
     {% endblock %}
 </head>
 <body style="background-color: #000 !important; color: #fff !important;">
-
-<header class="sticky top-0 py-2 z-50 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-sm border-b">
+<header class="sticky top-0 py-2 z-[110] bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-sm border-b">
     <div class="container mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex h-20 items-center justify-between">
             <div class="flex items-center gap-8">
@@ -143,15 +141,22 @@
             </div>
 
             <div class="flex items-center justify-end gap-4">
-                <div class="relative flex-1">
+                <form action="{{ path('app_vinilo_index') }}" method="get" class="relative flex-1" id="search-form">
                     <label for="global_search" class="sr-only">Buscar</label>
-                    <input id="global_search" class="h-10 w-full max-w-xs rounded-full border-0 bg-surface-light dark:bg-surface-dark pl-10 pr-4 text-sm text-on-surface-light dark:text-on-surface-dark placeholder:text-on-surface-muted-light dark:placeholder:text-on-surface-muted-dark focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Buscar..." />
-                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 text-on-surface-muted-light dark:text-on-surface-muted-dark">
+                    <input
+                        id="global_search"
+                        name="q"
+                        value="{{ app.request.query.get('q') }}"
+                        class="h-10 w-full max-w-xs rounded-full border-0 bg-surface-light dark:bg-surface-dark pl-10 pr-4 text-sm text-on-surface-light dark:text-on-surface-dark placeholder:text-on-surface-muted-light dark:placeholder:text-on-surface-muted-dark focus:outline-none focus:ring-2 focus:ring-rojo outline-none"
+                        placeholder="Buscar..."
+                    />
+                    <button type="submit" class="absolute inset-y-0 left-0 flex items-center pl-3 text-on-surface-muted-light dark:text-on-surface-muted-dark hover:text-rojo transition-colors">
                         <svg fill="currentColor" height="20" viewBox="0 0 256 256" width="20" xmlns="http://www.w3.org/2000/svg">
                             <path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"></path>
                         </svg>
-                    </div>
-                </div>
+                    </button>
+                </form>
+
                 <a href="{{ path('app_usuario_index') }}" class="flex h-10 w-10 items-center justify-center rounded-full bg-surface-light dark:bg-surface-dark hover:bg-primary/20 transition-colors">
                     <svg fill="currentColor" height="20px" viewBox="0 0 256 256" width="20px">
                         <path d="M230.92,212c-15.23-26.33-38.7-45.21-66.09-54.16a72,72,0,1,0-73.66,0C63.78,166.78,40.31,185.66,25.08,212a8,8,0,1,0,13.85,8c18.84-32.56,52.14-52,89.07-52s70.23,19.44,89.07,52a8,8,0,1,0,13.85-8ZM72,96a56,56,0,1,1,56,56A56.06,56.06,0,0,1,72,96Z"></path>
@@ -166,18 +171,9 @@
             </div>
         </div>
     </div>
-
-    <nav id="mobile-menu" class="hidden lg:hidden border-t bg-surface-light dark:bg-surface-dark">
-        <div class="container mx-auto px-4 py-3 flex flex-col gap-2">
-            <a class="text-sm font-medium hover:text-primary transition-colors" href="{{ path('app_vinilo_index') }}">Vinilos</a>
-            <a class="text-sm font-medium hover:text-primary transition-colors" href="{{ path('app_sobre_nosotros') }}">Sobre nosotros</a>
-            <a class="text-sm font-medium hover:text-primary transition-colors" href="{{ path('app_contacto') }}">Contacto</a>
-        </div>
-    </nav>
 </header>
 
-{# Contenedor de Toasts (Notificaciones) #}
-<div id="toast-container" class="fixed bottom-5 right-5 z-[100] flex flex-col gap-3"></div>
+<div id="toast-container" class="fixed bottom-5 right-5 z-[100] flex flex-col gap-3 pointer-events-none"></div>
 
 {% block body %}
     <main class="min-h-screen animate-reveal">
@@ -231,14 +227,14 @@
         });
     })();
 
-    // --- 2. Sistema de Notificaciones Toast (Mejorado para nombres largos) ---
+    // --- 2. Sistema de Notificaciones Toast (Ajuste de interactividad) ---
     function showToast(message) {
         const container = document.getElementById('toast-container');
         if (!container) return;
 
         const toast = document.createElement('div');
-        // Usamos max-w-sm y w-auto para que quepan nombres de discos largos
-        toast.className = `flex items-center gap-3 bg-[#1a1f23] border-l-4 border-[#e00000] text-white px-6 py-4 rounded-lg shadow-2xl translate-x-full opacity-0 transition-all duration-500 ease-out max-w-sm w-auto`;
+        // Usamos pointer-events-auto para que los avisos sigan siendo interactivos al pasar el ratón
+        toast.className = `flex items-center gap-3 bg-[#1a1f23] border-l-4 border-[#e00000] text-white px-6 py-4 rounded-lg shadow-2xl translate-x-full opacity-0 transition-all duration-500 ease-out max-w-sm w-auto pointer-events-auto`;
         toast.innerHTML = `
             <span class="material-symbols-outlined text-[#e00000]">check_circle</span>
             <div class="flex flex-col">
@@ -248,10 +244,8 @@
         `;
         container.appendChild(toast);
 
-        // Animación de entrada
         setTimeout(() => toast.classList.remove('translate-x-full', 'opacity-0'), 100);
 
-        // Auto-eliminar
         setTimeout(() => {
             toast.classList.add('translate-x-full', 'opacity-0');
             setTimeout(() => toast.remove(), 500);
@@ -267,32 +261,27 @@
         }
     }
 
-    // Sincronizar al cargar
     document.addEventListener('DOMContentLoaded', () => {
         const badge = document.getElementById('cart-badge');
         if (badge) localStorage.setItem('spin_sound_cart_count', badge.innerText);
     });
 
-    // Sincronizar al volver atrás en el navegador
     window.addEventListener('pageshow', () => {
         const badge = document.getElementById('cart-badge');
         const savedCount = localStorage.getItem('spin_sound_cart_count');
         if (badge && savedCount !== null) badge.innerText = savedCount;
     });
 
-    // --- 4. Interceptor Universal AJAX (Añadir, Eliminar, Cantidad) ---
+    // --- 4. Interceptor Universal AJAX ---
     document.addEventListener('submit', async function(e) {
         const form = e.target;
         const action = form.action || '';
 
-        // Detectar si el formulario es una acción de carrito
         if (action.includes('carrito/add') || action.includes('carrito/update') || action.includes('carrito/remove')) {
             e.preventDefault();
 
-            // Intentar capturar el nombre del vinilo para el mensaje
             let productName = "Producto";
             if (action.includes('add')) {
-                // Busca el título (h1, h2 o h3) dentro del contenedor más cercano (card o ficha)
                 const container = form.closest('article, section, main, div[class*="container"]');
                 const titleElement = container ? container.querySelector('h1, h2, h3') : null;
                 if (titleElement) productName = titleElement.innerText.trim();
@@ -306,24 +295,18 @@
                 });
 
                 if (response.ok) {
-                    // SI ESTAMOS EN LA VISTA DEL CARRITO:
-                    // Refrescamos la página pero REEMPLAZANDO el historial (evita el bug de "doble atrás")
                     if (window.location.pathname.includes('/carrito')) {
                         window.location.replace(window.location.href);
                         return;
                     }
 
-                    // SI ESTAMOS EN OTRA PÁGINA (Añadiendo desde catálogo):
                     const badge = document.getElementById('cart-badge');
                     let currentCount = parseInt(badge.innerText) || 0;
 
                     if (action.includes('add')) {
                         updateCartBadge(currentCount + 1);
-
-                        // Efecto visual de rebote en el badge
                         badge.style.transform = 'scale(1.5)';
                         setTimeout(() => badge.style.transform = 'scale(1)', 200);
-
                         showToast(`"${productName}" añadido.`);
                     } else {
                         showToast('Carrito actualizado.');
@@ -335,7 +318,6 @@
         }
     });
 
-    // Soporte para mensajes Flash de Symfony
     {% for message in app.flashes('success') %}
     showToast('{{ message|e("js") }}');
     {% endfor %}
