@@ -122,6 +122,9 @@ final class CarritoController extends AbstractController
     {
         $token = $request->request->get('_token');
         if (!$this->isCsrfTokenValid('add-to-cart', $token)) {
+            if ($request->isXmlHttpRequest()) {
+                return $this->json(['status' => 'error', 'message' => 'Token CSRF inválido'], 400);
+            }
             $this->addFlash('error', 'Token CSRF inválido.');
             return $this->redirectToRoute('app_vinilo_index');
         }
@@ -129,15 +132,27 @@ final class CarritoController extends AbstractController
         $viniloId = $request->request->get('vinilo_id');
         $vinilo   = $viniloRepository->find($viniloId);
         if (!$vinilo) {
+            if ($request->isXmlHttpRequest()) {
+                return $this->json(['status' => 'error', 'message' => 'Vinilo no encontrado'], 404);
+            }
             $this->addFlash('error', 'Vinilo no encontrado.');
             return $this->redirectToRoute('app_vinilo_index');
+        }
+
+        // Verificar stock disponible
+        if ($vinilo->getStock() <= 0) {
+            if ($request->isXmlHttpRequest()) {
+                return $this->json(['status' => 'error', 'message' => 'Producto sin stock disponible'], 400);
+            }
+            $this->addFlash('error', 'Producto sin stock disponible.');
+            $referer = $request->headers->get('referer');
+            return $referer ? $this->redirect($referer) : $this->redirectToRoute('app_vinilo_index');
         }
 
         $user    = $this->getUser();
         $session = $request->getSession();
         $carrito = null;
 
-        // Usuario autenticado y es Cliente
         if ($user instanceof \App\Entity\Cliente) {
             $carrito = $user->getCarrito();
             if (!$carrito) {
@@ -147,7 +162,6 @@ final class CarritoController extends AbstractController
                 $em->flush();
             }
         } else {
-            // Anónimo: carrito en sesión
             $cartId = $session->get('cart_id');
             if ($cartId) {
                 $carrito = $em->getRepository(Carrito::class)->find($cartId);
@@ -160,7 +174,6 @@ final class CarritoController extends AbstractController
             }
         }
 
-        // ¿Ya existe ese vinilo en el carrito?
         $detalle = null;
         foreach ($carrito->getDetalleCarritos() as $d) {
             if ($d->getVinilo() && $d->getVinilo()->getId() === $vinilo->getId()) {
@@ -170,7 +183,16 @@ final class CarritoController extends AbstractController
         }
 
         if ($detalle) {
-            $detalle->setCantidad(($detalle->getCantidad() ?? 0) + 1);
+            $nuevaCantidad = ($detalle->getCantidad() ?? 0) + 1;
+            if ($nuevaCantidad > $vinilo->getStock()) {
+                if ($request->isXmlHttpRequest()) {
+                    return $this->json(['status' => 'error', 'message' => 'Stock máximo alcanzado'], 400);
+                }
+                $this->addFlash('error', 'No hay suficiente stock disponible.');
+                $referer = $request->headers->get('referer');
+                return $referer ? $this->redirect($referer) : $this->redirectToRoute('app_vinilo_index');
+            }
+            $detalle->setCantidad($nuevaCantidad);
         } else {
             $detalle = new DetalleCarrito();
             $detalle->setCantidad(1);
@@ -182,19 +204,11 @@ final class CarritoController extends AbstractController
 
         $em->flush();
 
-        $this->addFlash('success', '"' . $vinilo->getTitulo() . '" añadido al carrito.');
-
-        $referer = $request->headers->get('referer');
-        return $referer ? $this->redirect($referer) : $this->redirectToRoute('app_vinilo_index');
-
-        $em->flush();
-
-        // NUEVA LÓGICA PARA EVITAR EL "DOBLE ATRÁS"
         if ($request->isXmlHttpRequest()) {
             return $this->json([
                 'status' => 'success',
                 'message' => '"' . $vinilo->getTitulo() . '" añadido al carrito.',
-                'cartCount' => count($carrito->getDetalleCarritos()) // Opcional para actualizar el badge
+                'cartCount' => count($carrito->getDetalleCarritos())
             ]);
         }
 
@@ -218,9 +232,18 @@ final class CarritoController extends AbstractController
 
         if ($detalle) {
             $nueva = ($detalle->getCantidad() ?? 1) + ($accion === 'mas' ? 1 : -1);
+            
             if ($nueva <= 0) {
                 $em->remove($detalle);
             } else {
+                // Verificar stock al incrementar
+                if ($accion === 'mas') {
+                    $vinilo = $detalle->getVinilo();
+                    if ($vinilo && $nueva > $vinilo->getStock()) {
+                        $this->addFlash('error', 'No hay suficiente stock disponible.');
+                        return $this->redirectToRoute('app_carrito_show_user');
+                    }
+                }
                 $detalle->setCantidad($nueva);
             }
             $em->flush();
