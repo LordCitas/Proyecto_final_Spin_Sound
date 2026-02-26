@@ -58,6 +58,13 @@ class Usuario implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
 
+    public function __construct()
+    {
+        // Inicializar createdAt y roles por defecto para evitar valores nulos al persistir
+        $this->createdAt = new \DateTimeImmutable();
+        $this->roles = [];
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -132,6 +139,29 @@ class Usuario implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $data;
     }
+
+    // -------------------- New methods required by UserInterface --------------------
+
+    /**
+     * If you store any temporary, sensitive data on the user, clear it here
+     * @see UserInterface::eraseCredentials()
+     */
+    public function eraseCredentials(): void
+    {
+        // If you had a plainPassword property, clear it here
+        // $this->plainPassword = null;
+    }
+
+    /**
+     * Returns the salt that was originally used to encode the password.
+     * Not needed when using modern algorithms (bcrypt, sodium, argon2i)
+     */
+    public function getSalt(): ?string
+    {
+        return null;
+    }
+
+    // -----------------------------------------------------------------------------
 
     public function getNombre(): ?string
     {

@@ -85,6 +85,34 @@
                     </div>
                 {% endif %}
 
+                {# Dirección #}
+                {% if registrationForm.direccion is defined %}
+                    <div class="space-y-2">
+                        {{ form_label(registrationForm.direccion, 'Dirección', {'label_attr': {'class': 'text-xs font-bold text-slate-400 uppercase tracking-[0.2em]'}}) }}
+                        <div class="relative group">
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-500 group-focus-within:text-[#e00000] transition-colors duration-200">
+                                <span class="material-symbols-outlined text-xl">home</span>
+                            </div>
+                            {{ form_widget(registrationForm.direccion, {'attr': {'placeholder': 'Calle, número, ciudad', 'class': 'block w-full pl-11 pr-4 py-4 bg-white/5 border border-white/10 rounded-xl text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-[#e00000]/50 focus:border-[#e00000] transition-colors duration-200 font-medium'}}) }}
+                            {{ form_errors(registrationForm.direccion) }}
+                        </div>
+                    </div>
+                {% endif %}
+
+                {# Teléfono #}
+                {% if registrationForm.telefono is defined %}
+                    <div class="space-y-2">
+                        {{ form_label(registrationForm.telefono, 'Teléfono (opcional)', {'label_attr': {'class': 'text-xs font-bold text-slate-400 uppercase tracking-[0.2em]'}}) }}
+                        <div class="relative group">
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-500 group-focus-within:text-[#e00000] transition-colors duration-200">
+                                <span class="material-symbols-outlined text-xl">phone</span>
+                            </div>
+                            {{ form_widget(registrationForm.telefono, {'attr': {'placeholder': 'Opcional', 'class': 'block w-full pl-11 pr-4 py-4 bg-white/5 border border-white/10 rounded-xl text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-[#e00000]/50 focus:border-[#e00000] transition-colors duration-200 font-medium'}}) }}
+                            {{ form_errors(registrationForm.telefono) }}
+                        </div>
+                    </div>
+                {% endif %}
+
                 {# Contraseña #}
                 {% if registrationForm.plainPassword is defined %}
                     <div class="space-y-2">

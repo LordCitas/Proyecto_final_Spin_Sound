@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{% block title %}Mi aplicación{% endblock %}</title>
-    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('img/logo-spin-sound-circular.png') }}?v=1">
+    <link rel="icon" type="image/png" href="{{ asset('img/logo-spin-sound-circular.png') }}?v=2">
     <link href="https://fonts.googleapis.com" rel="preconnect" />
     <link crossorigin href="https://fonts.gstatic.com/" rel="preconnect" />
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
@@ -111,8 +111,8 @@
             <div class="flex items-center gap-8">
                 <a class="flex items-center gap-3" href="{{ path('app_home') }}">
                     <img src="{{ asset('img/logohori.png') }}"
-                         alt="Viniland logo"
-                         class="h-[115px] w-auto object-contain transition-transform duration-300 ease-in-out hover:scale-110" />
+                         alt="Spin&Sound logo"
+                         class="h-[145px] w-auto object-contain transition-transform duration-300 ease-in-out hover:scale-110" />
                 </a>
                 <nav class="hidden lg:flex items-center gap-8">
                     <a class="text-lg font-bold uppercase tracking-wider hover:text-rojo transition-all duration-200"
@@ -161,8 +161,9 @@
                         id="global_search"
                         name="q"
                         value="{{ app.request.query.get('q') }}"
-                        class="h-10 w-full max-w-xs rounded-full border-0 bg-surface-light dark:bg-surface-dark pl-10 pr-4 text-sm text-on-surface-light dark:text-on-surface-dark placeholder:text-on-surface-muted-light dark:placeholder:text-on-surface-muted-dark focus:outline-none focus:ring-2 focus:ring-rojo outline-none"
+                        class="h-10 w-full max-w-xs rounded-full border-0 border-gray-600 bg-surface-light dark:bg-surface-dark pl-10 pr-4 text-sm text-on-surface-light dark:text-on-surface-dark placeholder:text-on-surface-muted-light dark:placeholder:text-on-surface-muted-dark focus:outline-none focus:ring-2 focus:ring-rojo outline-none"
                         placeholder="Buscar..."
+                        style="--tw-ring-color: #e00000;"
                     />
                     <button type="submit" class="absolute inset-y-0 left-0 flex items-center pl-3 text-on-surface-muted-light dark:text-on-surface-muted-dark hover:text-rojo transition-colors">
                         <svg fill="currentColor" height="20" viewBox="0 0 256 256" width="20" xmlns="http://www.w3.org/2000/svg">
@@ -261,7 +262,7 @@
         const iconColor = isError ? 'text-yellow-500' : 'text-[#e00000]';
         const icon = isError ? 'warning' : 'check_circle';
         const title = isError ? '¡Límite alcanzado!' : '¡Actualizado!';
-        
+
         toast.className = `flex items-center gap-3 bg-[#1a1f23] border-l-4 ${borderColor} text-white px-6 py-4 rounded-lg shadow-2xl translate-x-full opacity-0 transition-all duration-500 ease-out max-w-sm w-auto pointer-events-auto`;
         toast.innerHTML = `
             <span class="material-symbols-outlined ${iconColor}">${icon}</span>

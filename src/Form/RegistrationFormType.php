@@ -8,7 +8,6 @@ use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -45,9 +44,17 @@ class RegistrationFormType extends AbstractType
                     new NotBlank(message: 'Por favor, introduce tu teléfono'),
                 ],
             ])
+            ->add('email')
             ->add('direccion', TextType::class, [
-                'label' => 'Dirección',
                 'required' => true,
+                'attr' => ['placeholder' => 'Calle, número, ciudad'],
+            ])
+            ->add('telefono', IntegerType::class, [
+                'required' => false,
+                'attr' => ['placeholder' => 'Opcional'],
+            ])
+            ->add('agreeTerms', CheckboxType::class, [
+                'mapped' => false,
                 'constraints' => [
                     new NotBlank(message: 'Por favor, introduce tu dirección'),
                 ],
