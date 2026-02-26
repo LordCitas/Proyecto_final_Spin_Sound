@@ -13,8 +13,7 @@ class AdminController extends AbstractController
     #[Route('/admin/panel', name: 'app_admin_panel')]
     public function panel(ViniloRepository $viniloRepository): Response
     {
-        // TODO: Añadir verificación de rol admin
-        // $this->denyAccessUnlessGranted('ROLE_ADMIN');
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
         
         $vinilos = $viniloRepository->findAll();
         $novedades = $viniloRepository->findBy(['esNovedad' => true], ['fecha_lanzamiento' => 'DESC']);
@@ -28,8 +27,7 @@ class AdminController extends AbstractController
     #[Route('/admin/vinilo/{id}/toggle-novedad', name: 'app_admin_toggle_novedad', methods: ['POST'])]
     public function toggleNovedad(int $id, ViniloRepository $viniloRepository, EntityManagerInterface $em): Response
     {
-        // TODO: Añadir verificación de rol admin
-        // $this->denyAccessUnlessGranted('ROLE_ADMIN');
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
         
         $vinilo = $viniloRepository->find($id);
         if (!$vinilo) {
