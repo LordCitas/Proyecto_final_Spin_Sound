@@ -333,13 +333,13 @@
                 });
 
                 if (response.ok) {
-                    const data = await response.json();
-                    
+                    // Si estamos en la página del carrito, recargar
                     if (window.location.pathname.includes('/carrito')) {
-                        window.location.replace(window.location.href);
+                        window.location.reload();
                         return;
                     }
 
+                    const data = await response.json();
                     const badge = document.getElementById('cart-badge');
                     let currentCount = parseInt(badge.innerText) || 0;
 
