@@ -6,7 +6,10 @@ use App\Entity\Usuario;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
+use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\IsTrue;
@@ -19,39 +22,62 @@ class RegistrationFormType extends AbstractType
     {
         $builder
             ->add('nombre', TextType::class, [
+                'label' => 'Nombre completo',
                 'constraints' => [
-                    // Cambiado de array a argumento con nombre
-                    new NotBlank(message: 'Por favor, introduce un nombre de usuario'),
+                    new NotBlank(message: 'Por favor, introduce tu nombre'),
                     new Length(
                         min: 3,
                         minMessage: 'El nombre debe tener al menos {{ limit }} caracteres',
-                        max: 20
+                        max: 255
                     ),
                 ],
             ])
-            ->add('telefono', TextType::class, [
-                'required' => false,
-            ])
-            ->add('direccion', TextType::class, [
-                'required' => false,
-            ])
-            ->add('email')
-            ->add('agreeTerms', CheckboxType::class, [
-                'mapped' => false,
+            ->add('email', EmailType::class, [
+                'label' => 'Email',
                 'constraints' => [
-                    new IsTrue(message: 'Debes aceptar los términos y condiciones.'),
+                    new NotBlank(message: 'Por favor, introduce tu email'),
                 ],
             ])
-            ->add('plainPassword', PasswordType::class, [
+            ->add('telefono', IntegerType::class, [
+                'label' => 'Teléfono',
+                'required' => true,
+                'constraints' => [
+                    new NotBlank(message: 'Por favor, introduce tu teléfono'),
+                ],
+            ])
+            ->add('direccion', TextType::class, [
+                'label' => 'Dirección',
+                'required' => true,
+                'constraints' => [
+                    new NotBlank(message: 'Por favor, introduce tu dirección'),
+                ],
+            ])
+            ->add('plainPassword', RepeatedType::class, [
+                'type' => PasswordType::class,
                 'mapped' => false,
-                'attr' => ['autocomplete' => 'new-password'],
+                'first_options' => [
+                    'label' => 'Contraseña',
+                    'attr' => ['autocomplete' => 'new-password'],
+                ],
+                'second_options' => [
+                    'label' => 'Repetir contraseña',
+                    'attr' => ['autocomplete' => 'new-password'],
+                ],
+                'invalid_message' => 'Las contraseñas deben coincidir',
                 'constraints' => [
                     new NotBlank(message: 'Por favor, introduce una contraseña'),
                     new Length(
-                        min: 6,
+                        min: 8,
                         minMessage: 'Tu contraseña debe tener al menos {{ limit }} caracteres',
                         max: 4096,
                     ),
+                ],
+            ])
+            ->add('agreeTerms', CheckboxType::class, [
+                'mapped' => false,
+                'label' => 'Acepto los términos y condiciones',
+                'constraints' => [
+                    new IsTrue(message: 'Debes aceptar los términos y condiciones.'),
                 ],
             ])
         ;

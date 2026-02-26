@@ -332,6 +332,8 @@
                 });
 
                 if (response.ok) {
+                    const data = await response.json();
+                    
                     if (window.location.pathname.includes('/carrito')) {
                         window.location.replace(window.location.href);
                         return;
@@ -347,6 +349,12 @@
                         showToast(`"${productName}" añadido.`);
                     } else {
                         showToast('Carrito actualizado.');
+                    }
+                } else {
+                    // Manejar errores (stock insuficiente, etc.)
+                    const data = await response.json();
+                    if (data.message) {
+                        showToast(data.message, true);
                     }
                 }
             } catch (error) {
