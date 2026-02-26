@@ -87,6 +87,27 @@ final class UsuarioController extends AbstractController
         ]);
     }
 
+    #[Route('/{id}/avatar', name: 'app_usuario_avatar', methods: ['POST'])]
+    public function uploadAvatar(Request $request, Usuario $usuario, EntityManagerInterface $entityManager): Response
+    {
+        $avatarFile = $request->files->get('avatar');
+        
+        if ($avatarFile) {
+            $newFilename = uniqid() . '.' . $avatarFile->guessExtension();
+            $avatarFile->move(
+                $this->getParameter('kernel.project_dir') . '/public/img/avatars',
+                $newFilename
+            );
+            
+            $usuario->setAvatar('/img/avatars/' . $newFilename);
+            $entityManager->flush();
+            
+            $this->addFlash('success', 'Avatar actualizado correctamente');
+        }
+        
+        return $this->redirectToRoute('app_usuario_index');
+    }
+
     #[Route('/{id}', name: 'app_usuario_delete', methods: ['POST'])]
     public function delete(Request $request, Usuario $usuario, EntityManagerInterface $entityManager): Response
     {
