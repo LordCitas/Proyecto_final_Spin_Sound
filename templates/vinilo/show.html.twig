@@ -4,6 +4,40 @@
 
 {% block javascripts %}
     {{ parent() }}
+    <script>
+    async function toggleFavorito(viniloId) {
+        try {
+            const response = await fetch(`/favoritos/toggle/${viniloId}`, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                const btn = document.getElementById(`fav-btn-${viniloId}`);
+                const icon = btn.querySelector('.material-symbols-outlined');
+                
+                if (data.status === 'added') {
+                    icon.textContent = 'favorite';
+                    btn.classList.add('bg-[#e00000]');
+                    if (typeof showToast === 'function') {
+                        showToast('Añadido a favoritos');
+                    }
+                } else {
+                    icon.textContent = 'favorite_border';
+                    btn.classList.remove('bg-[#e00000]');
+                    if (typeof showToast === 'function') {
+                        showToast('Eliminado de favoritos');
+                    }
+                }
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+    </script>
 {% endblock %}
 
 {% block body %}
@@ -71,8 +105,8 @@
                             Añadir al carrito
                         </button>
                     </form>
-                    <button class="flex h-12 w-12 items-center justify-center rounded-lg border border-surface-dark bg-surface-dark text-on-surface-muted-dark hover:text-primary transition-colors">
-                        <span class="material-symbols-outlined">favorite_border</span>
+                    <button onclick="toggleFavorito({{ vinilo.id }})" id="fav-btn-{{ vinilo.id }}" class="flex h-12 w-12 items-center justify-center rounded-lg border border-surface-dark bg-surface-dark hover:bg-[#e00000] transition-colors">
+                        <span class="material-symbols-outlined text-white">favorite_border</span>
                     </button>
                 </div>
 
