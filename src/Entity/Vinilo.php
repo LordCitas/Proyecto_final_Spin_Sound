@@ -58,6 +58,9 @@ class Vinilo
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $imagen = null;
 
+    #[ORM\Column(type: 'boolean', options: ['default' => false])]
+    private bool $esNovedad = false;
+
     public function __construct()
     {
         $this->detallePedidos = new ArrayCollection();
@@ -253,6 +256,18 @@ class Vinilo
     public function setImagen(?string $imagen): static
     {
         $this->imagen = $imagen;
+
+        return $this;
+    }
+
+    public function isEsNovedad(): bool
+    {
+        return $this->esNovedad;
+    }
+
+    public function setEsNovedad(bool $esNovedad): static
+    {
+        $this->esNovedad = $esNovedad;
 
         return $this;
     }

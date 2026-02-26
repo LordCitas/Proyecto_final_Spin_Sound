@@ -32,11 +32,16 @@ class HomeController extends AbstractController
     #[Route('/', name: 'app_home')]
     public function index(ViniloRepository $viniloRepository): Response
     {
-        // Obtener las últimas 6 novedades por fecha de lanzamiento
-        $novedades = $viniloRepository->findBy([], ['fecha_lanzamiento' => 'DESC'], 6);
+        // Obtener vinilos marcados como novedades
+        $novedades = $viniloRepository->findBy(['esNovedad' => true], ['fecha_lanzamiento' => 'DESC'], 6);
 
-        // Obtener 4 ofertas (los más baratos como ejemplo)
-        $ofertas = $viniloRepository->findBy([], ['precio' => 'ASC'], 4);
+        // Obtener 4 ofertas destacadas (los más añadidos al carrito)
+        $ofertas = $viniloRepository->findMostPopularByCart(4);
+        
+        // Si no hay vinilos en carritos aún, mostrar los más recientes
+        if (empty($ofertas)) {
+            $ofertas = $viniloRepository->findBy([], ['fecha_lanzamiento' => 'DESC'], 4);
+        }
 
         return $this->render('home/index.html.twig', [
             'controller_name' => 'HomeController',

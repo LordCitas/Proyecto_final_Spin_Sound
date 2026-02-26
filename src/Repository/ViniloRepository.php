@@ -71,4 +71,22 @@ class ViniloRepository extends ServiceEntityRepository
 
         return $qb->getQuery()->getResult();
     }
+
+    /**
+     * Obtiene los vinilos más populares basándose en la cantidad de veces
+     * que han sido añadidos a carritos.
+     */
+    public function findMostPopularByCart(int $limit = 4): array
+    {
+        return $this->createQueryBuilder('v')
+            ->leftJoin('v.detalleCarritos', 'dc')
+            ->addSelect('COUNT(dc.id) as HIDDEN cart_count')
+            ->groupBy('v.id')
+            ->having('COUNT(dc.id) > 0')
+            ->orderBy('cart_count', 'DESC')
+            ->addOrderBy('v.fecha_lanzamiento', 'DESC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
 }
