@@ -130,12 +130,18 @@
                        style="font-family: 'Space Grotesk', sans-serif;">
                         Contacto
                     </a>
-                    {% set isAdmin = true %}{# Cambiar por: app.user and 'ROLE_ADMIN' in app.user.roles #}
-                    {% if isAdmin %}
+                    {% if is_granted('ROLE_ADMIN') %}
                     <a class="text-lg font-bold uppercase tracking-wider hover:text-rojo transition-all duration-200"
                        href="{{ path('app_admin_panel') }}"
                        style="font-family: 'Space Grotesk', sans-serif;">
                         Panel Admin
+                    </a>
+                    {% endif %}
+                    {% if is_granted('ROLE_SUPER_ADMIN') %}
+                    <a class="text-lg font-bold uppercase tracking-wider hover:text-rojo transition-all duration-200"
+                       href="{{ path('app_superadmin_panel') }}"
+                       style="font-family: 'Space Grotesk', sans-serif;">
+                        Panel Super Admin
                     </a>
                     {% endif %}
                 </nav>

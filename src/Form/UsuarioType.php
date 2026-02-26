@@ -13,20 +13,17 @@ class UsuarioType extends AbstractType
     {
         $builder
             ->add('email')
-            ->add('roles')
-            ->add('password')
+            // Removido 'roles' del formulario para evitar error de array to string
+            // ->add('roles')
+            // Removido 'password' del formulario de edición
+            // ->add('password')
             ->add('nombre')
             ->add('direccion')
             ->add('telefono')
-            ->add('createdAt', null, [
-                'widget' => 'single_text',
-            ])
-            ->add('deleteAt', null, [
-                'widget' => 'single_text',
-            ])
-            ->add('updatedAt', null, [
-                'widget' => 'single_text',
-            ])
+            // Removidos campos de fecha que no deben editarse manualmente
+            // ->add('createdAt')
+            // ->add('deleteAt')
+            // ->add('updatedAt')
         ;
     }
 
