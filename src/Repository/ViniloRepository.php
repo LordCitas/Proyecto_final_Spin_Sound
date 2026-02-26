@@ -20,7 +20,7 @@ class ViniloRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('v')
             ->leftJoin('v.artistas', 'a')
-            ->where('v.titulo LIKE :q OR a.nombre LIKE :q')
+            ->where('LOWER(v.titulo) LIKE LOWER(:q) OR LOWER(a.nombre) LIKE LOWER(:q)')
             ->setParameter('q', '%' . $query . '%')
             ->getQuery()
             ->getResult();
@@ -43,7 +43,7 @@ class ViniloRepository extends ServiceEntityRepository
             ->addSelect('a', 'g');
 
         if ($query !== '') {
-            $qb->andWhere('v.titulo LIKE :q OR a.nombre LIKE :q')
+            $qb->andWhere('LOWER(v.titulo) LIKE LOWER(:q) OR LOWER(a.nombre) LIKE LOWER(:q)')
                ->setParameter('q', '%' . $query . '%');
         }
 

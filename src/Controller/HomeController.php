@@ -23,6 +23,7 @@ namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 use App\Repository\ViniloRepository;
 
@@ -50,9 +51,14 @@ class HomeController extends AbstractController
         return $this->render('home/sobre_nosotros.html.twig');
     }
 
-    #[Route('/contacto', name: 'app_contacto')]
-    public function contacto(): Response
+    #[Route('/contacto', name: 'app_contacto', methods: ['GET', 'POST'])]
+    public function contacto(Request $request): Response
     {
+        if ($request->isMethod('POST')) {
+            $this->addFlash('success', 'Mensaje enviado correctamente.');
+            return $this->redirectToRoute('app_contacto');
+        }
+        
         return $this->render('home/contacto.html.twig');
     }
 }
