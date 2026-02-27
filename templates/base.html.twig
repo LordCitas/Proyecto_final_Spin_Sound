@@ -146,7 +146,7 @@
                     {% endif %}
                 </nav>
 
-                <button id="mobile-menu-button" aria-controls="mobile-menu" aria-expanded="false" class="lg:hidden inline-flex items-center justify-center rounded-md p-2 text-on-surface-muted-light dark:text-on-surface-muted-dark hover:bg-surface-light/20 dark:hover:bg-surface-dark/20 focus:outline-none" type="button">
+                <button id="mobile-menu-button" aria-controls="mobile-menu" aria-expanded="false" class="lg:hidden inline-flex items-center justify-center rounded-md p-2 text-on-surface-muted-light dark:text-on-surface-muted-dark hover:bg-surface-light/20 dark:hover:bg-surface-dark/20 focus:outline-none z-50 relative" type="button">
                     <span class="sr-only">Abrir menú</span>
                     <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
@@ -191,6 +191,26 @@
         </div>
     </div>
 </header>
+
+<!-- Menú móvil -->
+<div id="mobile-menu" class="hidden lg:hidden bg-surface-light dark:bg-surface-dark border-b border-gray-200 dark:border-gray-800">
+    <div class="container mx-auto px-4 py-4 space-y-2">
+        <a href="{{ path('app_home') }}" class="block px-4 py-2 rounded-lg hover:bg-primary/10 transition-colors">Inicio</a>
+        <a href="{{ path('app_vinilo_index') }}" class="block px-4 py-2 rounded-lg hover:bg-primary/10 transition-colors">Vinilos</a>
+        {% if is_granted('ROLE_ADMIN') %}
+            <a href="{{ path('app_admin_panel') }}" class="block px-4 py-2 rounded-lg hover:bg-primary/10 transition-colors">Panel Admin</a>
+        {% endif %}
+        {% if is_granted('ROLE_SUPER_ADMIN') %}
+            <a href="{{ path('app_superadmin_panel') }}" class="block px-4 py-2 rounded-lg hover:bg-primary/10 transition-colors">Super Admin</a>
+        {% endif %}
+        {% if app.user %}
+            <a href="{{ path('app_logout') }}" class="block px-4 py-2 rounded-lg hover:bg-primary/10 transition-colors">Cerrar sesión</a>
+        {% else %}
+            <a href="{{ path('app_login') }}" class="block px-4 py-2 rounded-lg hover:bg-primary/10 transition-colors">Iniciar sesión</a>
+            <a href="{{ path('app_register') }}" class="block px-4 py-2 rounded-lg hover:bg-primary/10 transition-colors">Registrarse</a>
+        {% endif %}
+    </div>
+</div>
 
 <div id="toast-container" class="fixed bottom-5 right-5 z-[100] flex flex-col gap-3 pointer-events-none"></div>
 
