@@ -19,7 +19,7 @@ class Vinilo
     #[ORM\Column(length: 255)]
     private ?string $titulo = null;
 
-    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTime $fecha_lanzamiento = null;
 
     #[ORM\Column]
@@ -91,7 +91,7 @@ class Vinilo
         return $this->fecha_lanzamiento;
     }
 
-    public function setFechaLanzamiento(\DateTime $fecha_lanzamiento): static
+    public function setFechaLanzamiento(?\DateTime $fecha_lanzamiento): static
     {
         $this->fecha_lanzamiento = $fecha_lanzamiento;
 

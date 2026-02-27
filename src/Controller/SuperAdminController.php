@@ -17,11 +17,10 @@ class SuperAdminController extends AbstractController
     {
         $this->denyAccessUnlessGranted('ROLE_SUPER_ADMIN');
         
-        // Obtener todos los usuarios y filtrar los que NO son admin ni super admin
+        // Obtener todos los usuarios excepto SUPER_ADMIN
         $todosUsuarios = $usuarioRepository->findAll();
         $usuarios = array_filter($todosUsuarios, function($usuario) {
-            $roles = $usuario->getRoles();
-            return !in_array('ROLE_ADMIN', $roles) && !in_array('ROLE_SUPER_ADMIN', $roles);
+            return !in_array('ROLE_SUPER_ADMIN', $usuario->getRoles());
         });
         
         return $this->render('superadmin/panel.html.twig', [
@@ -39,7 +38,12 @@ class SuperAdminController extends AbstractController
             throw $this->createNotFoundException('Usuario no encontrado');
         }
 
-        // Marcar como eliminado (soft delete)
+        // No permitir banear SUPER_ADMIN
+        if (in_array('ROLE_SUPER_ADMIN', $usuario->getRoles())) {
+            $this->addFlash('error', 'No se puede banear a un Super Admin');
+            return $this->redirectToRoute('app_superadmin_panel');
+        }
+
         $usuario->setDeleteAt(new \DateTimeImmutable());
         $em->flush();
 
@@ -75,12 +79,52 @@ class SuperAdminController extends AbstractController
             throw $this->createNotFoundException('Usuario no encontrado');
         }
 
-        // Eliminar permanentemente
+        // No permitir eliminar SUPER_ADMIN
+        if (in_array('ROLE_SUPER_ADMIN', $usuario->getRoles())) {
+            $this->addFlash('error', 'No se puede eliminar a un Super Admin');
+            return $this->redirectToRoute('app_superadmin_panel');
+        }
+
         $em->remove($usuario);
         $em->flush();
 
         $this->addFlash('success', 'Usuario eliminado permanentemente');
         return $this->redirectToRoute('app_superadmin_panel');
+    }
+
+    #[Route('/superadmin/usuario/{id}/toggle-role/{role}', name: 'app_superadmin_toggle_role', methods: ['POST'])]
+    public function toggleRole(int $id, string $role, Request $request, UsuarioRepository $usuarioRepository, EntityManagerInterface $em): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_SUPER_ADMIN');
+        
+        // Validar CSRF token
+        if (!$this->isCsrfTokenValid('toggle-role', $request->request->get('_token'))) {
+            return $this->json(['error' => 'Token inválido'], 400);
+        }
+        
+        $usuario = $usuarioRepository->find($id);
+        if (!$usuario) {
+            return $this->json(['error' => 'Usuario no encontrado'], 404);
+        }
+
+        // No permitir gestionar usuarios SUPER_ADMIN
+        if (in_array('ROLE_SUPER_ADMIN', $usuario->getRoles())) {
+            return $this->json(['error' => 'No se pueden modificar los permisos de un Super Admin'], 403);
+        }
+
+        $roles = $usuario->getRoles();
+        $roleToToggle = 'ROLE_' . strtoupper($role);
+        
+        if (in_array($roleToToggle, $roles)) {
+            $roles = array_diff($roles, [$roleToToggle]);
+        } else {
+            $roles[] = $roleToToggle;
+        }
+        
+        $usuario->setRoles(array_values($roles));
+        $em->flush();
+
+        return $this->json(['success' => true]);
     }
 
     #[Route('/superadmin/usuarios/bulk-action', name: 'app_superadmin_bulk_action', methods: ['POST'])]

@@ -76,11 +76,29 @@
                                 <td class="px-6 py-4 text-sm text-on-surface-muted-dark">{{ usuario.email }}</td>
                                 <td class="px-6 py-4 text-sm">{{ usuario.telefono ?? '-' }}</td>
                                 <td class="px-6 py-4 text-sm">
-                                    {% for role in usuario.roles %}
-                                        <span class="px-2 py-1 rounded text-xs font-semibold {% if role == 'ROLE_SUPER_ADMIN' %}bg-purple-900 text-purple-300{% elseif role == 'ROLE_ADMIN' %}bg-blue-900 text-blue-300{% else %}bg-gray-700 text-gray-300{% endif %}">
-                                            {{ role|replace({'ROLE_': ''}) }}
-                                        </span>
-                                    {% endfor %}
+                                    <div class="flex flex-col gap-2">
+                                        <!-- Checkbox ADMIN -->
+                                        <label class="flex items-center gap-2 cursor-pointer hover:bg-blue-900/20 px-2 py-1 rounded transition-colors">
+                                            <input 
+                                                type="checkbox" 
+                                                {% if 'ROLE_ADMIN' in usuario.roles %}checked{% endif %}
+                                                onchange="toggleRole({{ usuario.id }}, 'admin', this)"
+                                                class="w-4 h-4 rounded border-gray-600 text-blue-600 focus:ring-blue-500"
+                                            >
+                                            <span class="text-xs font-semibold text-blue-300">ADMIN</span>
+                                        </label>
+                                        
+                                        <!-- Checkbox SUPER_ADMIN -->
+                                        <label class="flex items-center gap-2 cursor-pointer hover:bg-purple-900/20 px-2 py-1 rounded transition-colors">
+                                            <input 
+                                                type="checkbox" 
+                                                {% if 'ROLE_SUPER_ADMIN' in usuario.roles %}checked{% endif %}
+                                                onchange="toggleRole({{ usuario.id }}, 'super_admin', this)"
+                                                class="w-4 h-4 rounded border-gray-600 text-purple-600 focus:ring-purple-500"
+                                            >
+                                            <span class="text-xs font-semibold text-purple-300">SUPER_ADMIN</span>
+                                        </label>
+                                    </div>
                                 </td>
                                 <td class="px-6 py-4">
                                     {% if usuario.deleteAt %}
@@ -208,6 +226,37 @@
 </main>
 
 <script>
+    // Función para toggle de roles
+    async function toggleRole(userId, role, checkbox) {
+        const originalState = checkbox.checked;
+        
+        try {
+            const response = await fetch(`/superadmin/usuario/${userId}/toggle-role/${role}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: `_token={{ csrf_token('toggle-role') }}`
+            });
+
+            if (response.ok) {
+                const data = await response.text();
+                if (typeof showToast === 'function') {
+                    showToast(originalState ? `Rol ${role} añadido` : `Rol ${role} eliminado`);
+                }
+            } else {
+                checkbox.checked = !originalState;
+                if (typeof showToast === 'function') {
+                    showToast('Error al cambiar el rol', true);
+                }
+            }
+        } catch (error) {
+            checkbox.checked = !originalState;
+            console.error('Error:', error);
+        }
+    }
+
     // Selección masiva de usuarios
     const selectAll = document.getElementById('select-all');
     const checkboxes = document.querySelectorAll('.usuario-checkbox');
