@@ -16,6 +16,107 @@
             <p class="text-on-surface-muted-dark">Gestiona el contenido de Spin&Sound</p>
         </div>
 
+        <!-- Mensajes Flash -->
+        {% for message in app.flashes('success') %}
+            <div class="mb-6 bg-green-900/30 border border-green-700 text-green-300 px-6 py-4 rounded-lg">
+                {{ message }}
+            </div>
+        {% endfor %}
+        {% for message in app.flashes('error') %}
+            <div class="mb-6 bg-red-900/30 border border-red-700 text-red-300 px-6 py-4 rounded-lg">
+                {{ message }}
+            </div>
+        {% endfor %}
+
+        <!-- Búsqueda en Discogs -->
+        <section class="mb-12">
+            <div class="bg-surface-dark border border-gray-800 rounded-lg p-6">
+                <h2 class="text-2xl font-bold tracking-tight mb-6">Añadir Vinilo desde Discogs</h2>
+
+                <div class="space-y-4">
+                    <!-- Buscador -->
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Buscar álbum por título o artista</label>
+                        <div class="relative">
+                            <input
+                                type="text"
+                                id="discogs-search"
+                                placeholder="Ej: Pink Floyd Dark Side..."
+                                class="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-black placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#e00000] focus:border-[#e00000]"
+                            />
+                            <div class="absolute right-3 top-1/2 -translate-y-1/2">
+                                <svg id="search-spinner" class="hidden animate-spin h-5 w-5 text-[#e00000]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Resultados de búsqueda -->
+                    <div id="search-results" class="hidden">
+                        <h3 class="text-lg font-semibold mb-3">Resultados:</h3>
+                        <div id="results-container" class="space-y-2 max-h-96 overflow-y-auto"></div>
+                    </div>
+
+                    <!-- Formulario para añadir vinilo -->
+                    <div id="add-form" class="hidden mt-6 p-4 bg-background-dark border border-gray-700 rounded-lg">
+                        <h3 class="text-lg font-semibold mb-4">Añadir a la tienda</h3>
+                        <form id="add-vinilo-form" method="post" action="{{ path('app_admin_add_from_discogs') }}" class="space-y-4">
+                            <input type="hidden" name="_token" value="{{ csrf_token('add-vinilo') }}" />
+                            <input type="hidden" name="discogs_id" id="selected-discogs-id" />
+
+                            <div id="selected-album-info" class="flex gap-4 mb-4 p-3 bg-gray-800 rounded-lg"></div>
+
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label for="precio" class="block text-sm font-medium mb-2">Precio (€) *</label>
+                                    <input
+                                        type="number"
+                                        name="precio"
+                                        id="precio"
+                                        step="0.01"
+                                        min="0.01"
+                                        required
+                                        placeholder="29.99"
+                                        class="w-full px-4 py-3 bg-background-dark border border-gray-700 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-[#e00000]"
+                                    />
+                                </div>
+                                <div>
+                                    <label for="stock" class="block text-sm font-medium mb-2">Stock *</label>
+                                    <input
+                                        type="number"
+                                        name="stock"
+                                        id="stock"
+                                        min="0"
+                                        required
+                                        placeholder="10"
+                                        class="w-full px-4 py-3 bg-background-dark border border-gray-700 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-[#e00000]"
+                                    />
+                                </div>
+                            </div>
+
+                            <div class="flex gap-3">
+                                <button
+                                    type="submit"
+                                    class="flex-1 bg-[#e00000] hover:bg-[#c00000] text-white font-bold px-6 py-3 rounded-lg transition-colors"
+                                >
+                                    Añadir a la tienda
+                                </button>
+                                <button
+                                    type="button"
+                                    onclick="document.getElementById('add-form').classList.add('hidden')"
+                                    class="px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white font-medium rounded-lg transition-colors"
+                                >
+                                    Cancelar
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- Gestión de Vinilos -->
         <section class="mb-12">
             <div class="flex items-center justify-between mb-6">
@@ -27,7 +128,7 @@
                     Añadir Vinilo
                 </a>
             </div>
-            
+
             <div class="bg-surface-dark border border-gray-800 rounded-lg overflow-hidden">
                 <div class="overflow-x-auto">
                     <table class="w-full">
@@ -63,7 +164,7 @@
                                         -
                                     {% endif %}
                                 </td>
-                                <td class="px-6 py-4">{{ vinilo.precio }}€</td>
+                                <td class="px-6 py-4 text-gray-900 font-semibold">{{ vinilo.precio }}€</td>
                                 <td class="px-6 py-4">
                                     <span class="px-3 py-1 rounded-full text-xs font-semibold {% if vinilo.stock > 10 %}bg-green-900 text-green-300{% elseif vinilo.stock > 0 %}bg-yellow-900 text-yellow-300{% else %}bg-red-900 text-red-300{% endif %}">
                                         {{ vinilo.stock }}
@@ -109,51 +210,6 @@
             </div>
         </section>
 
-        <!-- Gestión de Novedades -->
-        <section class="mb-12">
-            <div class="flex items-center justify-between mb-6">
-                <h2 class="text-2xl font-bold tracking-tight">Gestión de Novedades</h2>
-            </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {% for vinilo in novedades %}
-                <div class="bg-surface-dark border border-gray-800 rounded-lg overflow-hidden hover:border-[#e00000] transition-colors">
-                    <div class="aspect-square overflow-hidden">
-                        {% if vinilo.imagen %}
-                        <img src="{{ vinilo.imagen }}" alt="{{ vinilo.titulo }}" class="w-full h-full object-cover">
-                        {% else %}
-                        <div class="w-full h-full bg-gray-800 flex items-center justify-center">
-                            <svg fill="currentColor" class="w-16 h-16 text-gray-600" viewBox="0 0 256 256">
-                                <path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm40-96a40,40,0,1,1-40-40A40,40,0,0,1,168,120Zm-16,0a24,24,0,1,0-24,24A24,24,0,0,0,152,120Z"/>
-                            </svg>
-                        </div>
-                        {% endif %}
-                    </div>
-                    <div class="p-4">
-                        <h3 class="font-semibold mb-1">{{ vinilo.titulo }}</h3>
-                        <p class="text-sm text-on-surface-muted-dark mb-3">
-                            {% if vinilo.artistas.first %}
-                                {{ vinilo.artistas.first.nombre }}
-                            {% else %}
-                                Artista desconocido
-                            {% endif %}
-                        </p>
-                        <div class="flex gap-2">
-                            <form method="post" action="{{ path('app_admin_toggle_novedad', {id: vinilo.id}) }}" class="flex-1">
-                                <input type="hidden" name="_token" value="{{ csrf_token('toggle-novedad' ~ vinilo.id) }}">
-                                <button type="submit" class="w-full text-center bg-red-600 hover:bg-red-700 text-white text-sm font-medium px-4 py-2 rounded transition-colors">
-                                    Quitar de Novedades
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-                {% else %}
-                <p class="text-on-surface-muted-dark col-span-full text-center py-8">No hay novedades configuradas</p>
-                {% endfor %}
-            </div>
-        </section>
-
         <!-- Estadísticas Rápidas -->
         <section>
             <h2 class="text-2xl font-bold tracking-tight mb-6">Estadísticas</h2>
@@ -171,7 +227,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="bg-surface-dark border border-gray-800 rounded-lg p-6">
                     <div class="flex items-center gap-4">
                         <div class="p-3 bg-green-900/20 rounded-lg">
@@ -185,7 +241,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="bg-surface-dark border border-gray-800 rounded-lg p-6">
                     <div class="flex items-center gap-4">
                         <div class="p-3 bg-blue-900/20 rounded-lg">
@@ -203,4 +259,114 @@
         </section>
     </div>
 </main>
+
+<script>
+    // Búsqueda en Discogs con debounce
+    let searchTimeout;
+    const searchInput = document.getElementById('discogs-search');
+    const searchResults = document.getElementById('search-results');
+    const resultsContainer = document.getElementById('results-container');
+    const searchSpinner = document.getElementById('search-spinner');
+
+    searchInput.addEventListener('input', function() {
+        const query = this.value.trim();
+
+        clearTimeout(searchTimeout);
+
+        if (query.length < 3) {
+            searchResults.classList.add('hidden');
+            return;
+        }
+
+        searchSpinner.classList.remove('hidden');
+
+        searchTimeout = setTimeout(() => {
+            fetch(`{{ path('app_admin_discogs_search') }}?q=${encodeURIComponent(query)}`)
+                .then(response => response.json())
+                .then(data => {
+                    searchSpinner.classList.add('hidden');
+                    console.log('Respuesta completa de Discogs:', data); // Debug
+
+                    if (data.error) {
+                        console.error('Error de búsqueda:', data.error);
+                        resultsContainer.innerHTML = `<p class="text-red-400 text-center py-4">${data.error}</p>`;
+                        searchResults.classList.remove('hidden');
+                        return;
+                    }
+
+                    displayResults(data.results || []);
+                })
+                .catch(error => {
+                    searchSpinner.classList.add('hidden');
+                    console.error('Error en la petición:', error);
+                    resultsContainer.innerHTML = '<p class="text-red-400 text-center py-4">Error al conectar con Discogs. Verifica la consola para más detalles.</p>';
+                    searchResults.classList.remove('hidden');
+                });
+        }, 500);
+    });
+
+    function displayResults(results) {
+        resultsContainer.innerHTML = '';
+
+        if (results.length === 0) {
+            resultsContainer.innerHTML = '<p class="text-gray-400 text-center py-4">No se encontraron resultados</p>';
+            searchResults.classList.remove('hidden');
+            return;
+        }
+
+        results.forEach(result => {
+            console.log('Result item:', result); // Debug para ver la estructura
+
+            const div = document.createElement('div');
+            div.className = 'flex items-center gap-4 p-3 bg-gray-800 rounded-lg hover:bg-gray-700 cursor-pointer transition-colors';
+            div.onclick = () => selectAlbum(result);
+
+            // Intentar obtener la imagen de diferentes campos posibles
+            const img = result.thumb || result.cover_image || result.resource_url || '';
+            console.log('Image URL:', img); // Debug
+
+            div.innerHTML = `
+                <div class="w-16 h-16 flex-shrink-0 bg-gray-700 rounded overflow-hidden">
+                    ${img ? `<img src="${img}" alt="${result.title}" class="w-full h-full object-cover" onerror="this.parentElement.innerHTML='<div class=\\'w-full h-full flex items-center justify-center text-gray-500\\'>🎵</div>'">` : '<div class="w-full h-full flex items-center justify-center text-gray-500 text-2xl">🎵</div>'}
+                </div>
+                <div class="flex-1 min-w-0">
+                    <h4 class="font-semibold truncate">${result.title || 'Sin título'}</h4>
+                    <p class="text-sm text-gray-400 truncate">${result.year || 'Año desconocido'} ${result.format && result.format.length > 0 ? '· ' + result.format.join(', ') : ''}</p>
+                </div>
+                <button class="bg-[#e00000] hover:bg-[#c00000] text-white px-4 py-2 rounded-lg text-sm font-medium flex-shrink-0">
+                    Seleccionar
+                </button>
+            `;
+
+            resultsContainer.appendChild(div);
+        });
+
+        searchResults.classList.remove('hidden');
+    }
+
+    function selectAlbum(album) {
+        console.log('Album seleccionado:', album); // Debug
+
+        document.getElementById('selected-discogs-id').value = album.id;
+
+        const img = album.thumb || album.cover_image || '';
+
+        document.getElementById('selected-album-info').innerHTML = `
+            <div class="w-20 h-20 flex-shrink-0 bg-gray-700 rounded overflow-hidden">
+                ${img ? `<img src="${img}" alt="${album.title}" class="w-full h-full object-cover" onerror="this.parentElement.innerHTML='<div class=\\'w-full h-full flex items-center justify-center text-gray-500 text-3xl\\'>🎵</div>'">` : '<div class="w-full h-full flex items-center justify-center text-gray-500 text-3xl">🎵</div>'}
+            </div>
+            <div>
+                <h4 class="font-semibold text-lg">${album.title || 'Sin título'}</h4>
+                <p class="text-sm text-gray-400">${album.year || 'Año desconocido'}</p>
+            </div>
+        `;
+
+        document.getElementById('add-form').classList.remove('hidden');
+        searchResults.classList.add('hidden');
+        searchInput.value = '';
+
+        // Scroll al formulario
+        document.getElementById('add-form').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+</script>
 {% endblock %}
