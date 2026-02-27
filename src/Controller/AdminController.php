@@ -18,16 +18,28 @@ use Symfony\Component\Routing\Attribute\Route;
 class AdminController extends AbstractController
 {
     #[Route('/admin/panel', name: 'app_admin_panel')]
-    public function panel(ViniloRepository $viniloRepository): Response
+    public function panel(ViniloRepository $viniloRepository, GeneroRepository $generoRepository, Request $request): Response
     {
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
 
-        $vinilos = $viniloRepository->findAll();
+        $busqueda = $request->query->get('busqueda', '');
+        $generoFiltro = $request->query->get('genero', '');
+
+        if ($busqueda || $generoFiltro) {
+            $vinilos = $viniloRepository->findByFilters($busqueda, $generoFiltro, '', null, '');
+        } else {
+            $vinilos = $viniloRepository->findAll();
+        }
+
         $novedades = $viniloRepository->findBy(['esNovedad' => true], ['fecha_lanzamiento' => 'DESC']);
+        $generos = $generoRepository->findBy([], ['nombre' => 'ASC']);
 
         return $this->render('admin/panel.html.twig', [
             'vinilos' => $vinilos,
             'novedades' => $novedades,
+            'generos' => $generos,
+            'busqueda' => $busqueda,
+            'generoFiltro' => $generoFiltro,
         ]);
     }
 

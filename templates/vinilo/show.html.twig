@@ -13,12 +13,12 @@
                     'X-Requested-With': 'XMLHttpRequest'
                 }
             });
-            
+
             if (response.ok) {
                 const data = await response.json();
                 const btn = document.getElementById(`fav-btn-${viniloId}`);
                 const icon = btn.querySelector('.material-symbols-outlined');
-                
+
                 if (data.status === 'added') {
                     icon.textContent = 'favorite';
                     btn.classList.add('bg-[#e00000]');
@@ -84,7 +84,7 @@
             </div>
 
             {# Columna derecha: info #}
-            <div>
+            <div class="pt-7">
                 <h1 class="text-3xl font-bold tracking-tighter text-white sm:text-4xl">{{ titulo }}</h1>
                 <a href="{{ path('app_vinilo_index', {artista: vinilo.artistas.first ? vinilo.artistas.first.id : ''}) }}" class="mt-1 text-lg text-primary font-semibold hover:text-[#e00000] hover:underline transition-colors inline-block">{{ artistaNombre }}</a>
 
