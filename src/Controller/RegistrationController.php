@@ -32,7 +32,7 @@ class RegistrationController extends AbstractController
             $entityManager->flush();
 
             // Log the user in and redirect to home
-            $security->login($user, 'main');
+            return $security->login($user, 'form_login');
 
             return $this->redirectToRoute('app_home');
         }
