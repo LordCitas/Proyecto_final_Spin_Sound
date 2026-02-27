@@ -87,7 +87,7 @@ final class ViniloController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_vinilo_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_admin_panel', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('vinilo/edit.html.twig', [
