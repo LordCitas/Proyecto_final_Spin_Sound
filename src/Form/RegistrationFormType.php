@@ -2,9 +2,10 @@
 
 namespace App\Form;
 
-use App\Entity\Usuario;
+use App\Entity\Cliente;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -38,26 +39,10 @@ class RegistrationFormType extends AbstractType
                 ],
             ])
             ->add('telefono', IntegerType::class, [
-                'label' => 'Teléfono',
-                'required' => true,
-                'constraints' => [
-                    new NotBlank(message: 'Por favor, introduce tu teléfono'),
-                ],
-            ])
-            ->add('email')
-            ->add('direccion', TextType::class, [
-                'required' => true,
-                'attr' => ['placeholder' => 'Calle, número, ciudad'],
-            ])
-            ->add('telefono', IntegerType::class, [
                 'required' => false,
-                'attr' => ['placeholder' => 'Opcional'],
             ])
-            ->add('agreeTerms', CheckboxType::class, [
-                'mapped' => false,
-                'constraints' => [
-                    new NotBlank(message: 'Por favor, introduce tu dirección'),
-                ],
+            ->add('direccion', TextType::class, [
+                'required' => false,
             ])
             ->add('plainPassword', RepeatedType::class, [
                 'type' => PasswordType::class,
@@ -93,7 +78,7 @@ class RegistrationFormType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => Usuario::class,
+            'data_class' => Cliente::class,
         ]);
     }
 }

@@ -2,7 +2,7 @@
 
 namespace App\DataFixtures;
 
-use App\Entity\Usuario;
+use App\Entity\Cliente;
 use App\Entity\Admin;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
@@ -19,26 +19,26 @@ class UsuarioFixtures extends Fixture
 
     public function load(ObjectManager $manager): void
     {
-        // Crear 2 usuarios normales
-        $usuario1 = new Usuario();
-        $usuario1->setEmail('usuario1@test.com');
-        $usuario1->setNombre('Usuario Uno');
-        $usuario1->setDireccion('Calle Usuario 1, Madrid');
-        $usuario1->setTelefono(600111111);
-        $usuario1->setRoles(['ROLE_USER']);
-        $usuario1->setPassword($this->passwordHasher->hashPassword($usuario1, 'password123'));
-        $usuario1->setCreatedAt(new \DateTimeImmutable());
-        $manager->persist($usuario1);
+        // Crear 2 clientes
+        $cliente1 = new Cliente();
+        $cliente1->setEmail('usuario1@test.com');
+        $cliente1->setNombre('Usuario Uno');
+        $cliente1->setDireccion('Calle Usuario 1, Madrid');
+        $cliente1->setTelefono(600111111);
+        $cliente1->setRoles(['ROLE_USER']);
+        $cliente1->setPassword($this->passwordHasher->hashPassword($cliente1, 'password123'));
+        $cliente1->setCreatedAt(new \DateTimeImmutable());
+        $manager->persist($cliente1);
 
-        $usuario2 = new Usuario();
-        $usuario2->setEmail('usuario2@test.com');
-        $usuario2->setNombre('Usuario Dos');
-        $usuario2->setDireccion('Calle Usuario 2, Barcelona');
-        $usuario2->setTelefono(600222222);
-        $usuario2->setRoles(['ROLE_USER']);
-        $usuario2->setPassword($this->passwordHasher->hashPassword($usuario2, 'password123'));
-        $usuario2->setCreatedAt(new \DateTimeImmutable());
-        $manager->persist($usuario2);
+        $cliente2 = new Cliente();
+        $cliente2->setEmail('usuario2@test.com');
+        $cliente2->setNombre('Usuario Dos');
+        $cliente2->setDireccion('Calle Usuario 2, Barcelona');
+        $cliente2->setTelefono(600222222);
+        $cliente2->setRoles(['ROLE_USER']);
+        $cliente2->setPassword($this->passwordHasher->hashPassword($cliente2, 'password123'));
+        $cliente2->setCreatedAt(new \DateTimeImmutable());
+        $manager->persist($cliente2);
 
         // Crear 2 administradores
         $admin1 = new Admin();
