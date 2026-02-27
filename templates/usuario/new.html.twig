@@ -7,14 +7,33 @@
     <script>
         // Aseguramos que el modo oscuro esté activo y la config de Tailwind cargada
         document.documentElement.classList.add('dark');
+        
+        // Guardar la URL de referencia cuando se carga la página por primera vez
+        if (!sessionStorage.getItem('legalPageReferrer')) {
+            const referrer = document.referrer;
+            if (referrer && !referrer.includes('/usuario/new')) {
+                sessionStorage.setItem('legalPageReferrer', referrer);
+            }
+        }
+        
+        // Función para volver a la página original
+        function volverAtras() {
+            const referrer = sessionStorage.getItem('legalPageReferrer');
+            if (referrer) {
+                sessionStorage.removeItem('legalPageReferrer');
+                window.location.href = referrer;
+            } else {
+                window.history.back();
+            }
+        }
     </script>
 {% endblock %}
 
 {% block body %}
     <div class="min-h-screen bg-background-dark font-sans text-slate-300">
-        <div class="relative h-[40vh] w-full overflow-hidden flex items-center justify-center">
-            <div class="absolute inset-0 bg-gradient-to-b from-transparent via-background-dark/80 to-background-dark z-10"></div>
-            <div class="absolute inset-0 bg-cover bg-center scale-105 opacity-40" style="background-image: url('https://images.unsplash.com/photo-1603048588665-791ca8aea617?q=80&w=2000&auto=format&fit=crop');"></div>
+        <div class="relative h-[50vh] w-full overflow-hidden flex items-center justify-center">
+            <div class="absolute inset-0 bg-gradient-to-b from-transparent via-background-dark/50 via-70% to-background-dark z-10"></div>
+            <div class="absolute inset-0 bg-cover bg-center opacity-40" style="background-image: url('https://images.unsplash.com/photo-1603048588665-791ca8aea617?q=80&w=2000&auto=format&fit=crop');"></div>
 
             <div class="relative z-20 text-center px-4">
                 <h1 class="text-6xl font-black text-white tracking-tighter uppercase italic">Spin & <span class="text-[#e00000]">Sound</span></h1>
@@ -22,7 +41,7 @@
             </div>
         </div>
 
-        <div class="max-w-6xl mx-auto px-6 pb-24 grid grid-cols-1 lg:grid-cols-4 gap-12">
+        <div class="max-w-6xl mx-auto px-6 pt-12 pb-24 grid grid-cols-1 lg:grid-cols-4 gap-12">
 
             <aside class="lg:col-span-1">
                 <nav class="sticky top-8 space-y-4">
@@ -103,7 +122,7 @@
                     </p>
 
                     <div class="mt-12 flex justify-center">
-                        <button onclick="window.history.back()" style="background-color: #e00000;" class="px-10 py-4 rounded-xl text-white font-bold text-lg shadow-lg hover:opacity-90 transition-all active:scale-95">
+                        <button onclick="volverAtras()" style="background-color: #e00000;" class="px-10 py-4 rounded-xl text-white font-bold text-lg shadow-lg hover:opacity-90 transition-all active:scale-95">
                             Entendido, volver atrás
                         </button>
                     </div>

@@ -60,7 +60,7 @@
                 <div class="mb-2 text-sm text-on-surface-muted-dark">
                     <a class="hover:text-primary" href="{{ path('app_vinilo_index') }}">Vinilos</a>
                     <span>/</span>
-                    <span class="text-on-surface-dark">{{ genero }}</span>
+                    <a href="{{ path('app_vinilo_index', {genero: genero}) }}" class="text-on-surface-dark hover:text-[#e00000] hover:underline transition-colors">{{ genero }}</a>
                 </div>
                 <div class="relative aspect-[1/1] w-full overflow-hidden rounded-xl shadow-lg bg-surface-dark">
                     {% if vinilo.imagen %}
@@ -86,7 +86,7 @@
             {# Columna derecha: info #}
             <div>
                 <h1 class="text-3xl font-bold tracking-tighter text-white sm:text-4xl">{{ titulo }}</h1>
-                <p class="mt-1 text-lg text-primary font-semibold">{{ artistaNombre }}</p>
+                <a href="{{ path('app_vinilo_index', {artista: vinilo.artistas.first ? vinilo.artistas.first.id : ''}) }}" class="mt-1 text-lg text-primary font-semibold hover:text-[#e00000] hover:underline transition-colors inline-block">{{ artistaNombre }}</a>
 
                 {% if notas %}
                     <p class="mt-4 text-on-surface-muted-dark leading-relaxed text-sm">{{ notas|slice(0, 400) }}{% if notas|length > 400 %}…{% endif %}</p>
@@ -121,14 +121,16 @@
                     <h3 class="text-lg font-bold text-white mb-4">Detalles del producto</h3>
                     <dl class="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
                         <dt class="text-on-surface-muted-dark">Artista</dt>
-                        <dd class="text-on-surface-dark">{{ artistaNombre }}</dd>
+                        <dd class="text-on-surface-dark">
+                            <a href="{{ path('app_vinilo_index', {artista: vinilo.artistas.first ? vinilo.artistas.first.id : ''}) }}" class="hover:text-[#e00000] hover:underline transition-colors">{{ artistaNombre }}</a>
+                        </dd>
 
                         <dt class="text-on-surface-muted-dark">Título</dt>
                         <dd class="text-on-surface-dark">{{ titulo }}</dd>
 
                         <dt class="text-on-surface-muted-dark">Género</dt>
                         <dd class="text-on-surface-dark">
-                            {{ genero }}
+                            <a href="{{ path('app_vinilo_index', {genero: genero}) }}" class="hover:text-[#e00000] hover:underline transition-colors">{{ genero }}</a>
                             {% if estilos %}
                                 <span class="text-on-surface-muted-dark"> · {{ estilos|join(', ') }}</span>
                             {% endif %}

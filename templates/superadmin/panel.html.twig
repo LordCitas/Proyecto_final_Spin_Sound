@@ -21,12 +21,40 @@
             <div class="flex items-center justify-between mb-6">
                 <h2 class="text-2xl font-bold tracking-tight">Gestión de Usuarios</h2>
             </div>
+
+            <!-- Formulario de acción masiva -->
+            <div id="bulk-actions" class="hidden mb-4 p-4 bg-blue-900/20 border border-blue-700 rounded-lg">
+                <form id="bulk-form" method="post" action="{{ path('app_superadmin_bulk_action') }}" onsubmit="return confirmBulkAction()">
+                    <input type="hidden" name="_token" value="{{ csrf_token('bulk-action') }}">
+                    <div class="flex flex-wrap items-end gap-4">
+                        <div class="flex-1 min-w-[200px]">
+                            <label class="block text-sm font-medium mb-2">Acción</label>
+                            <select name="action" id="bulk-action" class="w-full px-4 py-2 bg-white border border-gray-700 rounded-lg text-black" required>
+                                <option value="" class="text-black">Seleccionar...</option>
+                                <option value="ban" class="text-black">Banear seleccionados</option>
+                                <option value="unban" class="text-black">Desbanear seleccionados</option>
+                                <option value="delete" class="text-black">Eliminar permanentemente</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="px-6 py-2 bg-[#e00000] hover:bg-[#c00000] text-white font-bold rounded-lg transition-colors">
+                            Aplicar
+                        </button>
+                        <button type="button" onclick="clearSelection()" class="px-6 py-2 bg-gray-700 hover:bg-gray-600 text-white font-medium rounded-lg transition-colors">
+                            Cancelar
+                        </button>
+                    </div>
+                    <p class="text-sm text-blue-300 mt-2"><span id="selected-count">0</span> usuarios seleccionados</p>
+                </form>
+            </div>
             
             <div class="bg-surface-dark border border-gray-800 rounded-lg overflow-hidden">
                 <div class="overflow-x-auto">
                     <table class="w-full">
                         <thead class="bg-[#1a1f23] border-b border-gray-800">
                             <tr>
+                                <th class="px-6 py-4 text-left">
+                                    <input type="checkbox" id="select-all" class="w-4 h-4 rounded border-gray-600 text-[#e00000] focus:ring-[#e00000]">
+                                </th>
                                 <th class="px-6 py-4 text-left text-sm font-semibold">ID</th>
                                 <th class="px-6 py-4 text-left text-sm font-semibold">Nombre</th>
                                 <th class="px-6 py-4 text-left text-sm font-semibold">Email</th>
@@ -39,6 +67,9 @@
                         <tbody class="divide-y divide-gray-800">
                             {% for usuario in usuarios %}
                             <tr class="hover:bg-[#1a1f23] transition-colors">
+                                <td class="px-6 py-4">
+                                    <input type="checkbox" name="ids[]" value="{{ usuario.id }}" form="bulk-form" class="usuario-checkbox w-4 h-4 rounded border-gray-600 text-[#e00000] focus:ring-[#e00000]">
+                                </td>
                                 <td class="px-6 py-4 text-sm">{{ usuario.id }}</td>
                                 <td class="px-6 py-4 font-medium">{{ usuario.nombre }}</td>
                                 <td class="px-6 py-4 text-sm text-on-surface-muted-dark">{{ usuario.email }}</td>
@@ -102,7 +133,7 @@
                             </tr>
                             {% else %}
                             <tr>
-                                <td colspan="7" class="px-6 py-8 text-center text-on-surface-muted-dark">No hay usuarios registrados</td>
+                                <td colspan="8" class="px-6 py-8 text-center text-on-surface-muted-dark">No hay usuarios registrados</td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -174,4 +205,56 @@
         </section>
     </div>
 </main>
+
+<script>
+    // Selección masiva de usuarios
+    const selectAll = document.getElementById('select-all');
+    const checkboxes = document.querySelectorAll('.usuario-checkbox');
+    const bulkActions = document.getElementById('bulk-actions');
+    const selectedCount = document.getElementById('selected-count');
+    const bulkActionSelect = document.getElementById('bulk-action');
+
+    selectAll.addEventListener('change', function() {
+        checkboxes.forEach(cb => cb.checked = this.checked);
+        updateBulkActions();
+    });
+
+    checkboxes.forEach(cb => {
+        cb.addEventListener('change', updateBulkActions);
+    });
+
+    function updateBulkActions() {
+        const selected = document.querySelectorAll('.usuario-checkbox:checked').length;
+        selectedCount.textContent = selected;
+        
+        if (selected > 0) {
+            bulkActions.classList.remove('hidden');
+        } else {
+            bulkActions.classList.add('hidden');
+        }
+        
+        selectAll.checked = selected === checkboxes.length && checkboxes.length > 0;
+    }
+
+    function clearSelection() {
+        checkboxes.forEach(cb => cb.checked = false);
+        selectAll.checked = false;
+        updateBulkActions();
+        bulkActionSelect.value = '';
+    }
+
+    function confirmBulkAction() {
+        const action = bulkActionSelect.value;
+        const count = document.querySelectorAll('.usuario-checkbox:checked').length;
+        
+        if (action === 'delete') {
+            return confirm(`¿Estás seguro de ELIMINAR PERMANENTEMENTE ${count} usuarios? Esta acción no se puede deshacer.`);
+        } else if (action === 'ban') {
+            return confirm(`¿Estás seguro de banear ${count} usuarios?`);
+        } else if (action === 'unban') {
+            return confirm(`¿Estás seguro de desbanear ${count} usuarios?`);
+        }
+        return true;
+    }
+</script>
 {% endblock %}

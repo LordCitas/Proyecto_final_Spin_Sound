@@ -80,10 +80,10 @@
                                 <div class="p-4">
                                     <h3 class="font-semibold text-white text-sm leading-snug line-clamp-2">{{ vinilo.titulo }}</h3>
                                     {% if vinilo.artistas.first %}
-                                        <p class="mt-1 text-xs text-primary">{{ vinilo.artistas.first.nombre }}</p>
+                                        <a href="{{ path('app_vinilo_index', {artista: vinilo.artistas.first.id}) }}" class="mt-1 text-xs text-primary hover:text-[#e00000] hover:underline transition-colors block">{{ vinilo.artistas.first.nombre }}</a>
                                     {% endif %}
                                     {% if vinilo.generos.first %}
-                                        <p class="mt-1 text-xs text-on-surface-muted-dark">{{ vinilo.generos.first.nombre }}</p>
+                                        <a href="{{ path('app_vinilo_index', {genero: vinilo.generos.first.nombre}) }}" class="mt-1 text-xs text-on-surface-muted-dark hover:text-[#e00000] hover:underline transition-colors block">{{ vinilo.generos.first.nombre }}</a>
                                     {% endif %}
                                     <p class="mt-2 text-sm font-bold text-white">{{ vinilo.precio }} €</p>
                                 </div>
