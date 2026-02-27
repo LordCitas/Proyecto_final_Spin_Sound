@@ -71,10 +71,28 @@ final class ViniloController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_vinilo_show', requirements: ['id' => '\\d+'], methods: ['GET'])]
-    public function show(Vinilo $vinilo): Response
+    public function show(Vinilo $vinilo, EntityManagerInterface $em): Response
     {
+        $isFavorito = false;
+        
+        if ($this->getUser()) {
+            $userId = $this->getUser()->getId();
+            $qb = $em->createQueryBuilder();
+            $favorito = $qb->select('f')
+                ->from('App\\Entity\\Favorito', 'f')
+                ->where('f.usuario_id = :userId')
+                ->andWhere('f.vinilo_id = :viniloId')
+                ->setParameter('userId', $userId)
+                ->setParameter('viniloId', $vinilo->getId())
+                ->getQuery()
+                ->getOneOrNullResult();
+            
+            $isFavorito = $favorito !== null;
+        }
+        
         return $this->render('vinilo/show.html.twig', [
             'vinilo' => $vinilo,
+            'isFavorito' => $isFavorito,
         ]);
     }
 
