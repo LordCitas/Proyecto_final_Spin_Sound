@@ -129,6 +129,31 @@
                 </a>
             </div>
 
+            <!-- Filtros de búsqueda -->
+            <div class="mb-6 bg-surface-dark border border-gray-800 rounded-lg p-4">
+                <form method="get" action="{{ path('app_admin_panel') }}" class="flex flex-wrap gap-4">
+                    <div class="flex-1 min-w-[250px]">
+                        <input type="text" name="busqueda" value="{{ busqueda }}" placeholder="Buscar por título..." class="w-full px-4 py-2 bg-white border border-gray-700 rounded-lg text-black">
+                    </div>
+                    <div class="flex-1 min-w-[200px]">
+                        <select name="genero" class="w-full px-4 py-2 bg-white border border-gray-700 rounded-lg text-black">
+                            <option value="">Todos los géneros</option>
+                            {% for genero in generos %}
+                                <option value="{{ genero.nombre }}" {% if generoFiltro == genero.nombre %}selected{% endif %}>{{ genero.nombre }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="px-6 py-2 bg-[#e00000] hover:bg-[#c00000] text-white font-bold rounded-lg transition-colors">
+                        Buscar
+                    </button>
+                    {% if busqueda or generoFiltro %}
+                        <a href="{{ path('app_admin_panel') }}" class="px-6 py-2 bg-gray-700 hover:bg-gray-600 text-white font-medium rounded-lg transition-colors">
+                            Limpiar
+                        </a>
+                    {% endif %}
+                </form>
+            </div>
+
             <!-- Formulario de edición masiva -->
             <div id="bulk-actions" class="hidden mb-4 p-4 bg-blue-900/20 border border-blue-700 rounded-lg">
                 <form id="bulk-form" method="post" action="{{ path('app_admin_bulk_update') }}" onsubmit="return confirmBulkAction()">
@@ -359,12 +384,34 @@
 
     function confirmBulkAction() {
         const action = bulkActionSelect.value;
-        const count = document.querySelectorAll('.vinilo-checkbox:checked').length;
+        const selectedCheckboxes = document.querySelectorAll('.vinilo-checkbox:checked');
+        const count = selectedCheckboxes.length;
         
         if (action === 'delete') {
             return confirm(`¿Estás seguro de eliminar ${count} vinilos?`);
         } else if (action === 'update') {
-            return confirm(`¿Estás seguro de actualizar ${count} vinilos?`);
+            const nuevoPrecio = document.querySelector('input[name="precio"]').value;
+            const nuevoStock = document.querySelector('input[name="stock"]').value;
+            
+            let mensaje = '¿Seguro que quieres realizar el siguiente cambio?\n\n';
+            
+            selectedCheckboxes.forEach(checkbox => {
+                const row = checkbox.closest('tr');
+                const titulo = row.querySelector('td:nth-child(3)').textContent.trim();
+                const precioActual = row.querySelector('td:nth-child(5)').textContent.replace('€', '').trim();
+                const stockActual = row.querySelector('td:nth-child(6) span').textContent.trim();
+                
+                mensaje += `${titulo}:\n`;
+                if (nuevoPrecio) {
+                    mensaje += `  Precio: ${precioActual}€ → ${nuevoPrecio}€\n`;
+                }
+                if (nuevoStock) {
+                    mensaje += `  Stock: ${stockActual} → ${nuevoStock}\n`;
+                }
+                mensaje += '\n';
+            });
+            
+            return confirm(mensaje);
         }
         return true;
     }
