@@ -104,7 +104,7 @@
             {% if vinilos is not empty %}
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {% for vinilo in vinilos %}
-                        <article class="group rounded-xl bg-surface-dark overflow-hidden shadow-lg hover:shadow-primary/20 transition-shadow">
+                        <article class="group rounded-xl bg-surface-dark overflow-hidden shadow-lg hover:shadow-primary/20 transition-shadow border border-gray-800">
                             <a href="{{ path('app_vinilo_show', {id: vinilo.id}) }}" class="block">
                                 <div class="aspect-square overflow-hidden bg-background-dark flex items-center justify-center">
                                     {% if vinilo.imagen %}
