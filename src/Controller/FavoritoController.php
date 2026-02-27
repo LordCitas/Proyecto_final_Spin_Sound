@@ -4,13 +4,14 @@ namespace App\Controller;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 class FavoritoController extends AbstractController
 {
     #[Route('/favoritos/toggle/{viniloId}', name: 'app_favorito_toggle', methods: ['POST'])]
-    public function toggle(int $viniloId, EntityManagerInterface $em): Response
+    public function toggle(int $viniloId, EntityManagerInterface $em, Request $request): Response
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
         
@@ -30,13 +31,27 @@ class FavoritoController extends AbstractController
         if ($favorito) {
             $em->remove($favorito);
             $em->flush();
-            return $this->json(['status' => 'removed']);
+            
+            // Si es AJAX, devolver JSON
+            if ($request->isXmlHttpRequest()) {
+                return $this->json(['status' => 'removed']);
+            }
+            // Si no, redirigir de vuelta
+            $referer = $request->headers->get('referer');
+            return $referer ? $this->redirect($referer) : $this->redirectToRoute('app_favoritos');
         } else {
             $em->getConnection()->executeStatement(
                 'INSERT INTO favorito (usuario_id, vinilo_id, created_at) VALUES (:userId, :viniloId, NOW())',
                 ['userId' => $userId, 'viniloId' => $viniloId]
             );
-            return $this->json(['status' => 'added']);
+            
+            // Si es AJAX, devolver JSON
+            if ($request->isXmlHttpRequest()) {
+                return $this->json(['status' => 'added']);
+            }
+            // Si no, redirigir de vuelta
+            $referer = $request->headers->get('referer');
+            return $referer ? $this->redirect($referer) : $this->redirectToRoute('app_favoritos');
         }
     }
     
