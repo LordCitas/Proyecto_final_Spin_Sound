@@ -28,12 +28,12 @@ class ViniloType extends AbstractType
             ])
             ->add('artistas', EntityType::class, [
                 'class' => Artista::class,
-                'choice_label' => 'id',
+                'choice_label' => 'nombre',
                 'multiple' => true,
             ])
             ->add('generos', EntityType::class, [
                 'class' => Genero::class,
-                'choice_label' => 'id',
+                'choice_label' => 'nombre',
                 'multiple' => true,
             ])
         ;

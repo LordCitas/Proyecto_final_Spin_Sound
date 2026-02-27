@@ -1,49 +1,59 @@
 import React from 'react';
 
-export default function AddToCart({ endpoint, viniloId, onAdded }) {
+export default function AddToCart({ viniloId, csrfToken, productName = 'Producto', disabled = false }) {
   const handleClick = async (e) => {
     e.preventDefault();
 
+    if (disabled) return;
+
     const formData = new FormData();
     formData.append('vinilo_id', viniloId);
-    // CSRF token must be present in DOM as meta tag or input; we'll try to read from a meta
-    const tokenMeta = document.querySelector('meta[name="csrf-token"]');
-    if (tokenMeta) {
-      formData.append('_token', tokenMeta.getAttribute('content'));
-    } else {
-      // Fallback: look for a hidden input with name _token inside the closest form
-      const btn = e.target;
-      const form = btn.closest('form');
-      if (form) {
-        const input = form.querySelector('input[name="_token"]');
-        if (input) formData.append('_token', input.value);
-      }
-    }
+    formData.append('_token', csrfToken);
 
     try {
-      const res = await fetch(endpoint, {
+      const response = await fetch('/carrito/add', {
         method: 'POST',
         body: formData,
-        credentials: 'same-origin',
         headers: {
-          'Accept': 'application/json'
+          'X-Requested-With': 'XMLHttpRequest'
         }
       });
 
-      const data = await res.json();
-      if (data && data.ok) {
-        if (typeof onAdded === 'function') onAdded(data);
+      if (response.ok) {
+        const badge = document.getElementById('cart-badge');
+        let currentCount = parseInt(badge?.innerText || 0);
+        
+        if (typeof window.updateCartBadge === 'function') {
+          window.updateCartBadge(currentCount + 1);
+        }
+        
+        if (badge) {
+          badge.style.transform = 'scale(1.5)';
+          setTimeout(() => badge.style.transform = 'scale(1)', 200);
+        }
+        
+        if (typeof window.showToast === 'function') {
+          window.showToast(`"${productName}" añadido.`);
+        }
       } else {
-        console.error('Error add to cart', data);
+        const data = await response.json();
+        if (data.message && typeof window.showToast === 'function') {
+          window.showToast(data.message, true);
+        }
       }
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      console.error('Error:', error);
     }
   };
 
   return (
-    <button onClick={handleClick} className="w-full rounded-lg py-2 text-sm font-bold text-white transition-transform hover:scale-105" style={{backgroundColor: '#e00000'}}>
-      Añadir al carrito
+    <button 
+      onClick={handleClick} 
+      disabled={disabled}
+      className={`w-full rounded-lg py-2 text-sm font-bold text-white transition-transform ${disabled ? 'cursor-not-allowed opacity-50' : 'hover:scale-105'}`} 
+      style={{ backgroundColor: disabled ? '#fbbf24' : '#e00000' }}
+    >
+      {disabled ? 'Sin stock' : 'Añadir al carrito'}
     </button>
   );
 }
