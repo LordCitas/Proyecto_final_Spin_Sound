@@ -40,10 +40,10 @@ class Usuario implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?string $password = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $nombre = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $direccion = null;
 
     #[ORM\Column(nullable: true)]
@@ -171,7 +171,7 @@ class Usuario implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->nombre;
     }
 
-    public function setNombre(string $nombre): static
+    public function setNombre(?string $nombre): static
     {
         $this->nombre = $nombre;
 
@@ -183,7 +183,7 @@ class Usuario implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->direccion;
     }
 
-    public function setDireccion(string $direccion): static
+    public function setDireccion(?string $direccion): static
     {
         $this->direccion = $direccion;
 

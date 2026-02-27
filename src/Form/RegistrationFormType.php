@@ -2,7 +2,7 @@
 
 namespace App\Form;
 
-use App\Entity\Usuario;
+use App\Entity\Cliente;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
@@ -31,19 +31,17 @@ class RegistrationFormType extends AbstractType
                     ),
                 ],
             ])
-            ->add('telefono', TextType::class, [
-                'label' => 'Teléfono',
-                'required' => true,
+            ->add('email', EmailType::class, [
+                'label' => 'Email',
                 'constraints' => [
-                    new NotBlank(message: 'Por favor, introduce tu teléfono'),
+                    new NotBlank(message: 'Por favor, introduce tu email'),
                 ],
             ])
+            ->add('telefono', IntegerType::class, [
+                'required' => false,
+            ])
             ->add('direccion', TextType::class, [
-                'label' => 'Dirección',
-                'required' => true,
-                'constraints' => [
-                    new NotBlank(message: 'Por favor, introduce tu dirección'),
-                ],
+                'required' => false,
             ])
             ->add('email', EmailType::class, [
                 'label' => 'Email',
@@ -85,7 +83,7 @@ class RegistrationFormType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => Usuario::class,
+            'data_class' => Cliente::class,
         ]);
     }
 }

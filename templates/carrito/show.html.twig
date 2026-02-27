@@ -124,14 +124,23 @@
                                 </div>
                             </div>
                         </div>
-                        {% if app.user %}
-                        <button onclick="openPaymentModal()" class="mt-6 block w-full rounded-lg py-3 text-center text-base font-bold text-white shadow-sm transition-transform hover:scale-105" style="background-color: #e00000;">
-                            Proceder al pago
-                        </button>
+                        {% if detalles|length > 0 %}
+                            {% if app.user %}
+                            <button onclick="openPaymentModal()" class="mt-6 block w-full rounded-lg py-3 text-center text-base font-bold text-white shadow-sm transition-transform hover:scale-105" style="background-color: #e00000;">
+                                Proceder al pago
+                            </button>
+                            {% else %}
+                            <a href="{{ path('app_login') }}" class="mt-6 block w-full rounded-lg py-3 text-center text-base font-bold text-white shadow-sm transition-transform hover:scale-105" style="background-color: #e00000;">
+                                Iniciar sesión para pagar
+                            </a>
+                            {% endif %}
                         {% else %}
-                        <a href="{{ path('app_login') }}" class="mt-6 block w-full rounded-lg py-3 text-center text-base font-bold text-white shadow-sm transition-transform hover:scale-105" style="background-color: #e00000;">
-                            Iniciar sesión para pagar
-                        </a>
+                            <div class="mt-6 p-4 rounded-lg bg-background-dark border border-surface-dark text-center">
+                                <svg fill="currentColor" class="h-12 w-12 mx-auto mb-2 text-on-surface-muted-dark opacity-40" viewBox="0 0 256 256">
+                                    <path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm-8-80V80a8,8,0,0,1,16,0v56a8,8,0,0,1-16,0Zm20,36a12,12,0,1,1-12-12A12,12,0,0,1,140,172Z"/>
+                                </svg>
+                                <p class="text-sm text-on-surface-muted-dark">Necesitas al menos un producto en el carrito para proceder al pago</p>
+                            </div>
                         {% endif %}
                         <a href="{{ path('app_vinilo_index') }}" class="mt-3 block text-center text-sm text-on-surface-muted-dark hover:text-primary transition-colors">
                             Seguir comprando
