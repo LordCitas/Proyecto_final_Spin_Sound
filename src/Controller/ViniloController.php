@@ -104,6 +104,6 @@ final class ViniloController extends AbstractController
             $entityManager->flush();
         }
 
-        return $this->redirectToRoute('app_vinilo_index', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('app_admin_panel', [], Response::HTTP_SEE_OTHER);
     }
 }
