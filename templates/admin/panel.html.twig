@@ -363,13 +363,13 @@
     function updateBulkActions() {
         const selected = document.querySelectorAll('.vinilo-checkbox:checked').length;
         selectedCount.textContent = selected;
-        
+
         if (selected > 0) {
             bulkActions.classList.remove('hidden');
         } else {
             bulkActions.classList.add('hidden');
         }
-        
+
         selectAll.checked = selected === checkboxes.length && checkboxes.length > 0;
     }
 
@@ -384,9 +384,8 @@
 
     function confirmBulkAction() {
         const action = bulkActionSelect.value;
-        const selectedCheckboxes = document.querySelectorAll('.vinilo-checkbox:checked');
-        const count = selectedCheckboxes.length;
-        
+        const count = document.querySelectorAll('.vinilo-checkbox:checked').length;
+
         if (action === 'delete') {
             return confirm(`¿Estás seguro de eliminar ${count} vinilos?`);
         } else if (action === 'update') {

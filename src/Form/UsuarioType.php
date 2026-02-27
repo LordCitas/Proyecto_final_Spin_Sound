@@ -12,7 +12,10 @@ class UsuarioType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('email')
+            ->add('email', null, [
+                'disabled' => true,
+                'attr' => ['readonly' => true],
+            ])
             // Removido 'roles' del formulario para evitar error de array to string
             // ->add('roles')
             // Removido 'password' del formulario de edición

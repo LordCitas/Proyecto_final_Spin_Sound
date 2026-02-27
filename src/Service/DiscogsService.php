@@ -101,6 +101,7 @@ class DiscogsService
 
     /**
      * Busca lanzamientos por texto libre (para el buscador general).
+     * Filtra solo vinilos (Vinyl).
      */
     public function search(string $query, int $perPage = 20, int $page = 1): array
     {
@@ -110,6 +111,7 @@ class DiscogsService
                 'query'   => [
                     'q'        => $query,
                     'type'     => 'release',
+                    'format'   => 'vinyl',  // Solo vinilos
                     'per_page' => $perPage,
                     'page'     => $page,
                 ],

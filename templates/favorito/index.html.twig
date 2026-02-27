@@ -38,6 +38,14 @@
                         <div class="p-4">
                             <h3 class="font-bold text-white truncate">{{ vinilo.titulo }}</h3>
                             <p class="text-sm text-[#e00000] font-bold mt-2">{{ vinilo.precio|number_format(2, ',', '.') }} €</p>
+                            <form method="post" action="{{ path('app_favorito_toggle', {viniloId: vinilo.id}) }}" class="mt-3">
+                                <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white text-sm font-bold py-2 px-4 rounded-lg transition-all flex items-center justify-center gap-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256">
+                                        <path d="M216,48H176V40a24,24,0,0,0-24-24H104A24,24,0,0,0,80,40v8H40a8,8,0,0,0,0,16h8V208a16,16,0,0,0,16,16H192a16,16,0,0,0,16-16V64h8a8,8,0,0,0,0-16ZM96,40a8,8,0,0,1,8-8h48a8,8,0,0,1,8,8v8H96Zm96,168H64V64H192Z"></path>
+                                    </svg>
+                                    Eliminar
+                                </button>
+                            </form>
                         </div>
                     </article>
                     {% endfor %}

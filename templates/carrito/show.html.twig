@@ -4,7 +4,7 @@
 
 {% block body %}
 <main class="flex-grow">
-    <div class="mx-auto max-w-4xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
+    <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
         <div class="space-y-8">
             <div>
                 <nav aria-label="Breadcrumb">
@@ -24,10 +24,10 @@
             {% endfor %}
             {% set shipping = subtotal > 0 ? 5.00 : 0.00 %}
 
-            <div class="grid grid-cols-1 gap-12 lg:grid-cols-3 lg:items-start">
+            <div class="flex flex-col lg:flex-row gap-12">
 
                 {# Lista de items #}
-                <div class="space-y-6 lg:col-span-2">
+                <div class="flex-1 space-y-6">
                     <div class="divide-y divide-surface-dark rounded-lg border border-surface-dark bg-surface-dark">
                         {% if detalles|length > 0 %}
                             {% for detalle in detalles %}
@@ -105,7 +105,7 @@
                 </div>
 
                 {# Resumen #}
-                <div class="lg:col-span-1">
+                <div class="lg:w-96 flex-shrink-0">
                     <div class="rounded-lg border border-surface-dark bg-surface-dark p-6">
                         <h3 class="text-lg font-semibold text-white">Resumen del pedido</h3>
                         <div class="mt-4 space-y-3 text-sm">
