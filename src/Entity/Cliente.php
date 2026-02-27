@@ -17,12 +17,13 @@ class Cliente extends Usuario
     private Collection $pedidos;
 
     #[ORM\OneToOne(inversedBy: 'cliente', cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: false)]
     private ?Carrito $carrito = null;
 
     public function __construct()
     {
+        parent::__construct();
         $this->pedidos = new ArrayCollection();
+        $this->carrito = new Carrito();
     }
 
     /**

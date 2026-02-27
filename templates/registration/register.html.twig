@@ -97,7 +97,7 @@
                         </div>
                         {{ form_errors(registrationForm.plainPassword.first) }}
                     </div>
-                    
+
                     <div class="space-y-2">
                         {{ form_label(registrationForm.plainPassword.second, 'Repetir contraseña', {'label_attr': {'class': 'text-xs font-bold text-slate-400 uppercase tracking-[0.2em]'}}) }}
                         <div class="relative group">
@@ -107,7 +107,7 @@
                             {{ form_widget(registrationForm.plainPassword.second, {'attr': {'placeholder': 'Repite la contraseña', 'class': 'block w-full pl-11 pr-4 py-4 bg-white/5 border border-white/10 rounded-xl text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-[#e00000]/50 focus:border-[#e00000] transition-colors duration-200 font-medium'}}) }}
                         </div>
                         {{ form_errors(registrationForm.plainPassword.second) }}
-                        {{ form_errors(registrationForm.plainPassword) }}
+
                     </div>
                 {% endif %}
 

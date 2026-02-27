@@ -2,13 +2,13 @@
 
 namespace App\Form;
 
-use App\Entity\Usuario;
+use App\Entity\Cliente;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\IsTrue;
@@ -38,25 +38,15 @@ class RegistrationFormType extends AbstractType
                 ],
             ])
             ->add('telefono', IntegerType::class, [
-                'label' => 'Teléfono',
-                'required' => true,
-                'constraints' => [
-                    new NotBlank(message: 'Por favor, introduce tu teléfono'),
-                ],
-            ])
-            ->add('email')
-            ->add('direccion', TextType::class, [
-                'required' => true,
-                'attr' => ['placeholder' => 'Calle, número, ciudad'],
-            ])
-            ->add('telefono', IntegerType::class, [
                 'required' => false,
-                'attr' => ['placeholder' => 'Opcional'],
             ])
-            ->add('agreeTerms', CheckboxType::class, [
-                'mapped' => false,
+            ->add('direccion', TextType::class, [
+                'required' => false,
+            ])
+            ->add('email', EmailType::class, [
+                'label' => 'Email',
                 'constraints' => [
-                    new NotBlank(message: 'Por favor, introduce tu dirección'),
+                    new NotBlank(message: 'Por favor, introduce tu email'),
                 ],
             ])
             ->add('plainPassword', RepeatedType::class, [
@@ -93,7 +83,7 @@ class RegistrationFormType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => Usuario::class,
+            'data_class' => Cliente::class,
         ]);
     }
 }

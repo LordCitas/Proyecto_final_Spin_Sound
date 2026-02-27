@@ -7,7 +7,9 @@
     <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
 
         <aside class="lg:col-span-1">
-            {% include 'vinilo/_filters.html.twig' %}
+            <div class="sticky top-4">
+                {% include 'vinilo/_filters.html.twig' %}
+            </div>
         </aside>
 
         <section class="lg:col-span-3">
@@ -87,13 +89,19 @@
                                 </div>
                             </a>
                             <div class="px-4 pb-4">
-                                <form method="post" action="{{ path('app_carrito_add') }}">
-                                    <input type="hidden" name="vinilo_id" value="{{ vinilo.id }}">
-                                    <input type="hidden" name="_token" value="{{ csrf_token('add-to-cart') }}">
-                                    <button type="submit" class="w-full rounded-lg py-2 text-sm font-bold text-white transition-transform hover:scale-105" style="background-color: #e00000;">
-                                        Añadir al carrito
+                                {% if vinilo.stock > 0 %}
+                                    <form method="post" action="{{ path('app_carrito_add') }}">
+                                        <input type="hidden" name="vinilo_id" value="{{ vinilo.id }}">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('add-to-cart') }}">
+                                        <button type="submit" class="w-full rounded-lg py-2 text-sm font-bold text-white transition-transform hover:scale-105" style="background-color: #e00000;">
+                                            Añadir al carrito
+                                        </button>
+                                    </form>
+                                {% else %}
+                                    <button disabled class="w-full rounded-lg py-2 text-sm font-bold text-gray-800 cursor-not-allowed" style="background-color: #fbbf24;">
+                                        Sin stock
                                     </button>
-                                </form>
+                                {% endif %}
                             </div>
                         </article>
                     {% endfor %}
