@@ -2,6 +2,44 @@
 
 {% block title %}Spin&Sound | Vinilos{% endblock %}
 
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+    async function toggleFavorito(viniloId) {
+        try {
+            const response = await fetch(`/favoritos/toggle/${viniloId}`, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                const btn = document.getElementById(`fav-btn-${viniloId}`);
+                const icon = btn.querySelector('.material-symbols-outlined');
+                
+                if (data.status === 'added') {
+                    icon.textContent = 'favorite';
+                    btn.classList.add('bg-[#e00000]');
+                    if (typeof showToast === 'function') {
+                        showToast('Añadido a favoritos');
+                    }
+                } else {
+                    icon.textContent = 'favorite_border';
+                    btn.classList.remove('bg-[#e00000]');
+                    if (typeof showToast === 'function') {
+                        showToast('Eliminado de favoritos');
+                    }
+                }
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+    </script>
+{% endblock %}
+
 {% block body %}
 <main class="container mx-auto px-4 py-8">
     <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
@@ -85,12 +123,12 @@
                                     {% if vinilo.generos.first %}
                                         <a href="{{ path('app_vinilo_index', {genero: vinilo.generos.first.nombre}) }}" class="mt-1 text-xs text-on-surface-muted-dark hover:text-[#e00000] hover:underline transition-colors block">{{ vinilo.generos.first.nombre }}</a>
                                     {% endif %}
-                                    <p class="mt-2 text-sm font-bold text-white">{{ vinilo.precio }} €</p>
+                                    <p class="mt-1 text-sm font-bold text-white text-right">{{ vinilo.precio }} €</p>
                                 </div>
                             </a>
-                            <div class="px-4 pb-4">
+                            <div class="px-4 pb-4 flex items-center gap-2">
                                 {% if vinilo.stock > 0 %}
-                                    <form method="post" action="{{ path('app_carrito_add') }}">
+                                    <form method="post" action="{{ path('app_carrito_add') }}" class="flex-1">
                                         <input type="hidden" name="vinilo_id" value="{{ vinilo.id }}">
                                         <input type="hidden" name="_token" value="{{ csrf_token('add-to-cart') }}">
                                         <button type="submit" class="w-full rounded-lg py-2 text-sm font-bold text-white transition-transform hover:scale-105" style="background-color: #e00000;">
@@ -98,10 +136,13 @@
                                         </button>
                                     </form>
                                 {% else %}
-                                    <button disabled class="w-full rounded-lg py-2 text-sm font-bold text-gray-800 cursor-not-allowed" style="background-color: #fbbf24;">
+                                    <button disabled class="flex-1 rounded-lg py-2 text-sm font-bold text-gray-800 cursor-not-allowed" style="background-color: #fbbf24;">
                                         Sin stock
                                     </button>
                                 {% endif %}
+                                <button onclick="toggleFavorito({{ vinilo.id }})" id="fav-btn-{{ vinilo.id }}" class="flex h-9 w-9 items-center justify-center rounded-lg border border-surface-dark {% if vinilo.id in favoritosIds %}bg-[#e00000]{% else %}bg-surface-dark{% endif %} hover:bg-[#e00000] transition-colors">
+                                    <span class="material-symbols-outlined text-white text-base">{% if vinilo.id in favoritosIds %}favorite{% else %}favorite_border{% endif %}</span>
+                                </button>
                             </div>
                         </article>
                     {% endfor %}
