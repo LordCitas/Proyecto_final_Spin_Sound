@@ -21,7 +21,8 @@ final class ViniloController extends AbstractController
         ViniloRepository  $viniloRepository,
         GeneroRepository  $generoRepository,
         ArtistaRepository $artistaRepository,
-        Request           $request
+        Request           $request,
+        EntityManagerInterface $em
     ): Response {
         $query     = $request->query->get('q', '');
         $genero    = $request->query->get('genero', '');
@@ -37,6 +38,19 @@ final class ViniloController extends AbstractController
             $orden
         );
 
+        $favoritosIds = [];
+        if ($this->getUser()) {
+            $userId = $this->getUser()->getId();
+            $qb = $em->createQueryBuilder();
+            $favoritos = $qb->select('f.vinilo_id')
+                ->from('App\\Entity\\Favorito', 'f')
+                ->where('f.usuario_id = :userId')
+                ->setParameter('userId', $userId)
+                ->getQuery()
+                ->getResult();
+            $favoritosIds = array_column($favoritos, 'vinilo_id');
+        }
+
         return $this->render('vinilo/index.html.twig', [
             'vinilos'   => $vinilos,
             'query'     => $query,
@@ -46,6 +60,7 @@ final class ViniloController extends AbstractController
             'orden'     => $orden,
             'generos'   => $generoRepository->findBy([], ['nombre' => 'ASC']),
             'artistas'  => $artistaRepository->findBy([], ['nombre' => 'ASC']),
+            'favoritosIds' => $favoritosIds,
         ]);
     }
 
