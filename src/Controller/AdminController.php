@@ -82,6 +82,77 @@ class AdminController extends AbstractController
         ]);
     }
 
+    #[Route('/admin/vinilo/{id}/delete', name: 'app_admin_vinilo_delete', methods: ['POST'])]
+    public function deleteVinilo(int $id, ViniloRepository $viniloRepository, EntityManagerInterface $em, Request $request): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
+        if (!$this->isCsrfTokenValid('delete-vinilo' . $id, $request->request->get('_token'))) {
+            $this->addFlash('error', 'Token CSRF inválido');
+            return $this->redirectToRoute('app_admin_panel');
+        }
+
+        $vinilo = $viniloRepository->find($id);
+        if (!$vinilo) {
+            throw $this->createNotFoundException('Vinilo no encontrado');
+        }
+
+        $em->remove($vinilo);
+        $em->flush();
+
+        $this->addFlash('success', 'Vinilo eliminado correctamente');
+        return $this->redirectToRoute('app_admin_panel');
+    }
+
+    #[Route('/admin/vinilos/bulk-update', name: 'app_admin_bulk_update', methods: ['POST'])]
+    public function bulkUpdate(Request $request, ViniloRepository $viniloRepository, EntityManagerInterface $em): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
+        if (!$this->isCsrfTokenValid('bulk-update', $request->request->get('_token'))) {
+            $this->addFlash('error', 'Token CSRF inválido');
+            return $this->redirectToRoute('app_admin_panel');
+        }
+
+        $ids = $request->request->all('ids');
+        $action = $request->request->get('action');
+        $precio = $request->request->get('precio');
+        $stock = $request->request->get('stock');
+
+        if (empty($ids)) {
+            $this->addFlash('error', 'No se seleccionaron vinilos');
+            return $this->redirectToRoute('app_admin_panel');
+        }
+
+        $count = 0;
+        foreach ($ids as $id) {
+            $vinilo = $viniloRepository->find($id);
+            if (!$vinilo) continue;
+
+            if ($action === 'delete') {
+                $em->remove($vinilo);
+                $count++;
+            } elseif ($action === 'update') {
+                if ($precio !== null && $precio !== '') {
+                    $vinilo->setPrecio((float) $precio);
+                }
+                if ($stock !== null && $stock !== '') {
+                    $vinilo->setStock((int) $stock);
+                }
+                $count++;
+            }
+        }
+
+        $em->flush();
+
+        $message = $action === 'delete' 
+            ? "$count vinilos eliminados" 
+            : "$count vinilos actualizados";
+        
+        $this->addFlash('success', $message);
+        return $this->redirectToRoute('app_admin_panel');
+    }
+
     #[Route('/admin/vinilo/add-from-discogs', name: 'app_admin_add_from_discogs', methods: ['POST'])]
     public function addFromDiscogs(
         Request $request,
@@ -101,67 +172,61 @@ class AdminController extends AbstractController
             return $this->redirectToRoute('app_admin_panel');
         }
 
-        // Obtener datos de Discogs
-        $releaseData = $discogsService->fetchRelease((int) $discogsId);
+        try {
+            $releaseData = $discogsService->fetchRelease((int) $discogsId);
 
-        if (!$releaseData) {
-            $this->addFlash('error', 'No se pudo obtener información del álbum');
-            return $this->redirectToRoute('app_admin_panel');
-        }
+            if (!$releaseData) {
+                $this->addFlash('error', 'No se pudo obtener información del álbum');
+                return $this->redirectToRoute('app_admin_panel');
+            }
 
-        // Crear vinilo
-        $vinilo = new Vinilo();
-        $vinilo->setTitulo($releaseData['title'] ?? 'Desconocido');
-        $vinilo->setPrecio($precio);
-        $vinilo->setStock($stock);
+            $vinilo = new Vinilo();
+            $vinilo->setTitulo($releaseData['title'] ?? 'Desconocido');
+            $vinilo->setPrecio($precio);
+            $vinilo->setStock($stock);
 
-        // Año de lanzamiento
-        if (!empty($releaseData['year'])) {
-            $vinilo->setFechaLanzamiento(new \DateTime($releaseData['year'] . '-01-01'));
-        }
+            if (!empty($releaseData['year'])) {
+                $vinilo->setFechaLanzamiento(new \DateTime($releaseData['year'] . '-01-01'));
+            }
 
-        // Imagen
-        $imageUrl = $discogsService->getImageUrl($releaseData);
-        if ($imageUrl) {
-            $vinilo->setImagen($imageUrl);
-        }
+            $imageUrl = $discogsService->getImageUrl($releaseData);
+            if ($imageUrl) {
+                $vinilo->setImagen($imageUrl);
+            }
 
-        // Artistas
-        if (!empty($releaseData['artists'])) {
-            foreach ($releaseData['artists'] as $artistData) {
-                $artistaNombre = $artistData['name'] ?? 'Desconocido';
-
-                // Buscar o crear artista
-                $artista = $artistaRepository->findOneBy(['nombre' => $artistaNombre]);
-                if (!$artista) {
-                    $artista = new Artista();
-                    $artista->setNombre($artistaNombre);
-                    $artista->setNacionalidad('Desconocida');
-                    $em->persist($artista);
+            if (!empty($releaseData['artists'])) {
+                foreach ($releaseData['artists'] as $artistData) {
+                    $artistaNombre = $artistData['name'] ?? 'Desconocido';
+                    $artista = $artistaRepository->findOneBy(['nombre' => $artistaNombre]);
+                    if (!$artista) {
+                        $artista = new Artista();
+                        $artista->setNombre($artistaNombre);
+                        $artista->setNacionalidad('Desconocida');
+                        $em->persist($artista);
+                    }
+                    $vinilo->addArtista($artista);
                 }
-
-                $vinilo->addArtista($artista);
-            }
-        }
-
-        // Género (extraer del primer género si existe)
-        if (!empty($releaseData['genres'])) {
-            $generoNombre = $releaseData['genres'][0];
-
-            $genero = $generoRepository->findOneBy(['nombre' => $generoNombre]);
-            if (!$genero) {
-                $genero = new Genero();
-                $genero->setNombre($generoNombre);
-                $em->persist($genero);
             }
 
-            $genero->addGeneroVinilo($vinilo);
+            if (!empty($releaseData['genres'])) {
+                $generoNombre = $releaseData['genres'][0];
+                $genero = $generoRepository->findOneBy(['nombre' => $generoNombre]);
+                if (!$genero) {
+                    $genero = new Genero();
+                    $genero->setNombre($generoNombre);
+                    $em->persist($genero);
+                }
+                $genero->addGeneroVinilo($vinilo);
+            }
+
+            $em->persist($vinilo);
+            $em->flush();
+
+            $this->addFlash('success', 'Vinilo añadido correctamente');
+        } catch (\Exception $e) {
+            $this->addFlash('error', 'Error al añadir vinilo: ' . $e->getMessage());
         }
 
-        $em->persist($vinilo);
-        $em->flush();
-
-        $this->addFlash('success', 'Vinilo añadido correctamente');
         return $this->redirectToRoute('app_admin_panel');
     }
 }
