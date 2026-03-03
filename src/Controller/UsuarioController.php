@@ -66,21 +66,56 @@ final class UsuarioController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_usuario_show', requirements: ['id' => '\d+'], methods: ['GET'])]
-    public function show(): Response
+    public function show(Usuario $usuario): Response
     {
-        return $this->redirectToRoute('app_usuario_index');
+        // Si el usuario es superadmin, puede ver cualquier perfil
+        if ($this->isGranted('ROLE_SUPER_ADMIN')) {
+            return $this->render('usuario/index.html.twig', [
+                'usuario' => $usuario,
+            ]);
+        }
+
+        // Si no es superadmin, solo puede ver su propio perfil
+        $currentUser = $this->getUser();
+        if ($currentUser !== $usuario) {
+            // Podríamos lanzar un AccessDeniedException o redirigir a su propio perfil
+            return $this->redirectToRoute('app_usuario_index');
+        }
+
+        return $this->render('usuario/index.html.twig', [
+            'usuario' => $usuario,
+        ]);
     }
 
     #[Route('/{id}/edit', name: 'app_usuario_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Usuario $usuario, EntityManagerInterface $entityManager): Response
     {
+        // Guardar la URL de referencia en la sesión si es la primera vez que entra (GET)
+        if ($request->isMethod('GET')) {
+            $referer = $request->headers->get('referer');
+            // Evitar guardar la propia página de edición como referer
+            if ($referer && !str_contains($referer, $request->getPathInfo())) {
+                $request->getSession()->set('user_edit_referer', $referer);
+            }
+        }
+
         $form = $this->createForm(UsuarioType::class, $usuario);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_usuario_index', [], Response::HTTP_SEE_OTHER);
+            $this->addFlash('success', 'Perfil actualizado correctamente.');
+
+            // Redirigir a la URL guardada o al perfil por defecto
+            $redirectUrl = $request->getSession()->get('user_edit_referer');
+            $request->getSession()->remove('user_edit_referer');
+
+            if ($redirectUrl) {
+                return $this->redirect($redirectUrl);
+            }
+
+            return $this->redirectToRoute('app_usuario_show', ['id' => $usuario->getId()]);
         }
 
         return $this->render('usuario/edit.html.twig', [
@@ -93,20 +128,20 @@ final class UsuarioController extends AbstractController
     public function uploadAvatar(Request $request, Usuario $usuario, EntityManagerInterface $entityManager): Response
     {
         $avatarFile = $request->files->get('avatar');
-        
+
         if ($avatarFile) {
             $newFilename = uniqid() . '.' . $avatarFile->guessExtension();
             $avatarFile->move(
                 $this->getParameter('kernel.project_dir') . '/public/img/avatars',
                 $newFilename
             );
-            
+
             $usuario->setAvatar('/img/avatars/' . $newFilename);
             $entityManager->flush();
-            
+
             $this->addFlash('success', 'Avatar actualizado correctamente');
         }
-        
+
         return $this->redirectToRoute('app_usuario_index');
     }
 

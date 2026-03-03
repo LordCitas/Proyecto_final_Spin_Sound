@@ -9,7 +9,7 @@
             <!-- Header con Avatar -->
             <div class="mb-8">
                 <div class="flex items-center gap-6 mb-6">
-                    <a href="{{ path('app_usuario_show', {id: usuario.id}) }}" class="p-2 hover:bg-surface-dark rounded-lg transition-colors" title="Volver al perfil">
+                    <a href="javascript:history.back()" class="p-2 hover:bg-surface-dark rounded-lg transition-colors" title="Volver">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256">
                             <path d="M224,128a8,8,0,0,1-8,8H59.31l58.35,58.34a8,8,0,0,1-11.32,11.32l-72-72a8,8,0,0,1,0-11.32l72-72a8,8,0,0,1,11.32,11.32L59.31,120H216A8,8,0,0,1,224,128Z"></path>
                         </svg>
@@ -35,7 +35,7 @@
                         Información Personal
                     </h2>
                 </div>
-                
+
                 <!-- Contenido del Formulario -->
                 <div class="p-8">
                     {{ include('usuario/_form.html.twig', { button_label: 'Guardar Cambios', usuario: usuario }) }}
@@ -68,22 +68,22 @@
                 <div class="p-8">
                     <form method="post" action="{{ path('app_usuario_change_password', {id: usuario.id}) }}" class="space-y-4">
                         <input type="hidden" name="_token" value="{{ csrf_token('change-password' ~ usuario.id) }}">
-                        
+
                         <div>
                             <label class="block text-sm font-semibold text-white mb-2">Contraseña Actual</label>
                             <input type="password" name="current_password" required class="w-full px-4 py-3 bg-[#0b0f13] border border-gray-700 rounded-lg text-white focus:border-[#e00000] focus:outline-none focus:ring-2 focus:ring-[#e00000]/20">
                         </div>
-                        
+
                         <div>
                             <label class="block text-sm font-semibold text-white mb-2">Nueva Contraseña</label>
                             <input type="password" name="new_password" required minlength="8" class="w-full px-4 py-3 bg-[#0b0f13] border border-gray-700 rounded-lg text-white focus:border-[#e00000] focus:outline-none focus:ring-2 focus:ring-[#e00000]/20">
                         </div>
-                        
+
                         <div>
                             <label class="block text-sm font-semibold text-white mb-2">Confirmar Nueva Contraseña</label>
                             <input type="password" name="confirm_password" required minlength="8" class="w-full px-4 py-3 bg-[#0b0f13] border border-gray-700 rounded-lg text-white focus:border-[#e00000] focus:outline-none focus:ring-2 focus:ring-[#e00000]/20">
                         </div>
-                        
+
                         <button type="submit" class="text-white font-bold px-6 py-3 rounded-lg transition-all" style="background-color: #e00000;">
                             Cambiar Contraseña
                         </button>
@@ -114,7 +114,7 @@
                             Eliminar Cuenta
                         </button>
                     </div>
-                    
+
                     <form id="delete-form" method="post" action="{{ path('app_usuario_delete', {id: usuario.id}) }}" class="hidden">
                         <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ usuario.id) }}">
                     </form>

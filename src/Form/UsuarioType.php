@@ -13,8 +13,7 @@ class UsuarioType extends AbstractType
     {
         $builder
             ->add('email', null, [
-                'disabled' => true,
-                'attr' => ['readonly' => true],
+                'label' => 'Correo electrónico',
             ])
             // Removido 'roles' del formulario para evitar error de array to string
             // ->add('roles')
