@@ -18,6 +18,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 ])]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
 #[UniqueEntity(fields: ['email'], message: 'Ya existe una cuenta con este correo electrónico')]
+#[ORM\HasLifecycleCallbacks]
 class Usuario implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -53,19 +54,31 @@ class Usuario implements UserInterface, PasswordAuthenticatedUserInterface
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column(nullable: true)]
-    private ?\DateTimeImmutable $deleteAt = null;
+    private ?\DateTimeImmutable $deletedAt = null;
 
     #[ORM\Column(nullable: true)]
-    private ?\DateTimeImmutable $updatedAt = null;
+    private ?\DateTimeImmutable $modifiedAt = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $avatar = null;
 
     public function __construct()
     {
-        // Inicializar createdAt y roles por defecto para evitar valores nulos al persistir
-        $this->createdAt = new \DateTimeImmutable();
         $this->roles = [];
+    }
+
+    #[ORM\PrePersist]
+    public function onPrePersist(): void
+    {
+        if ($this->createdAt === null) {
+            $this->createdAt = new \DateTimeImmutable();
+        }
+    }
+
+    #[ORM\PreUpdate]
+    public function onPreUpdate(): void
+    {
+        $this->modifiedAt = new \DateTimeImmutable();
     }
 
     public function getId(): ?int
@@ -214,28 +227,60 @@ class Usuario implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function getDeletedAt(): ?\DateTimeImmutable
+    {
+        return $this->deletedAt;
+    }
+
+    public function setDeletedAt(?\DateTimeImmutable $deletedAt): static
+    {
+        $this->deletedAt = $deletedAt;
+
+        return $this;
+    }
+
+    /**
+     * @deprecated Use getDeletedAt() instead
+     */
     public function getDeleteAt(): ?\DateTimeImmutable
     {
-        return $this->deleteAt;
+        return $this->getDeletedAt();
     }
 
+    /**
+     * @deprecated Use setDeletedAt() instead
+     */
     public function setDeleteAt(?\DateTimeImmutable $deleteAt): static
     {
-        $this->deleteAt = $deleteAt;
+        return $this->setDeletedAt($deleteAt);
+    }
+
+    public function getModifiedAt(): ?\DateTimeImmutable
+    {
+        return $this->modifiedAt;
+    }
+
+    public function setModifiedAt(?\DateTimeImmutable $modifiedAt): static
+    {
+        $this->modifiedAt = $modifiedAt;
 
         return $this;
     }
 
+    /**
+     * @deprecated Use getModifiedAt() instead
+     */
     public function getUpdatedAt(): ?\DateTimeImmutable
     {
-        return $this->updatedAt;
+        return $this->getModifiedAt();
     }
 
+    /**
+     * @deprecated Use setModifiedAt() instead
+     */
     public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static
     {
-        $this->updatedAt = $updatedAt;
-
-        return $this;
+        return $this->setModifiedAt($updatedAt);
     }
 
     public function getAvatar(): ?string

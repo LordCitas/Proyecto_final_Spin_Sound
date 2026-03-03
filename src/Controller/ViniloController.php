@@ -89,7 +89,7 @@ final class ViniloController extends AbstractController
     public function show(Vinilo $vinilo, EntityManagerInterface $em): Response
     {
         $isFavorito = false;
-        
+
         if ($this->getUser()) {
             $userId = $this->getUser()->getId();
             $qb = $em->createQueryBuilder();
@@ -101,10 +101,10 @@ final class ViniloController extends AbstractController
                 ->setParameter('viniloId', $vinilo->getId())
                 ->getQuery()
                 ->getOneOrNullResult();
-            
+
             $isFavorito = $favorito !== null;
         }
-        
+
         return $this->render('vinilo/show.html.twig', [
             'vinilo' => $vinilo,
             'isFavorito' => $isFavorito,
@@ -133,8 +133,9 @@ final class ViniloController extends AbstractController
     public function delete(Request $request, Vinilo $vinilo, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete'.$vinilo->getId(), $request->getPayload()->getString('_token'))) {
-            $entityManager->remove($vinilo);
+            $vinilo->setDeletedAt(new \DateTimeImmutable());
             $entityManager->flush();
+            $this->addFlash('success', 'Vinilo eliminado (desactivado) correctamente.');
         }
 
         return $this->redirectToRoute('app_admin_panel', [], Response::HTTP_SEE_OTHER);

@@ -9,6 +9,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ViniloRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class Vinilo
 {
     #[ORM\Id]
@@ -61,12 +62,35 @@ class Vinilo
     #[ORM\Column(type: 'boolean', options: ['default' => false])]
     private bool $esNovedad = false;
 
+    #[ORM\Column]
+    private ?\DateTimeImmutable $createdAt = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $modifiedAt = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $deletedAt = null;
+
     public function __construct()
     {
         $this->detallePedidos = new ArrayCollection();
         $this->artistas = new ArrayCollection();
         $this->generos = new ArrayCollection();
         $this->detalleCarritos = new ArrayCollection();
+    }
+
+    #[ORM\PrePersist]
+    public function onPrePersist(): void
+    {
+        if ($this->createdAt === null) {
+            $this->createdAt = new \DateTimeImmutable();
+        }
+    }
+
+    #[ORM\PreUpdate]
+    public function onPreUpdate(): void
+    {
+        $this->modifiedAt = new \DateTimeImmutable();
     }
 
     public function getId(): ?int
@@ -268,6 +292,42 @@ class Vinilo
     public function setEsNovedad(bool $esNovedad): static
     {
         $this->esNovedad = $esNovedad;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeImmutable $createdAt): static
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    public function getModifiedAt(): ?\DateTimeImmutable
+    {
+        return $this->modifiedAt;
+    }
+
+    public function setModifiedAt(?\DateTimeImmutable $modifiedAt): static
+    {
+        $this->modifiedAt = $modifiedAt;
+
+        return $this;
+    }
+
+    public function getDeletedAt(): ?\DateTimeImmutable
+    {
+        return $this->deletedAt;
+    }
+
+    public function setDeletedAt(?\DateTimeImmutable $deletedAt): static
+    {
+        $this->deletedAt = $deletedAt;
 
         return $this;
     }

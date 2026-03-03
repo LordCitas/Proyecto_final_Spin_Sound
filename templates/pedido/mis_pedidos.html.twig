@@ -76,7 +76,14 @@
                                         {% endif %}
                                     </div>
                                     <div class="flex-1">
-                                        <p class="font-medium text-white">{{ detalle.vinilo ? detalle.vinilo.titulo : 'Producto' }}</p>
+                                        <p class="font-medium text-white">
+                                            {{ detalle.vinilo ? detalle.vinilo.titulo : 'Producto' }}
+                                            {% if detalle.vinilo and detalle.vinilo.deletedAt %}
+                                                <span class="ml-2 text-xs font-semibold bg-red-900/40 text-red-400 px-2 py-0.5 rounded border border-red-800/50">
+                                                    Este vinilo ya no está disponible
+                                                </span>
+                                            {% endif %}
+                                        </p>
                                         <p class="text-sm text-on-surface-muted-dark">Cantidad: {{ detalle.cantidad }}</p>
                                     </div>
                                     <p class="font-bold text-white">{{ (detalle.precio * detalle.cantidad)|number_format(2, ',', '.') }} €</p>

@@ -4,9 +4,11 @@ namespace App\Controller;
 
 use App\Entity\Artista;
 use App\Entity\Genero;
+use App\Entity\Pedido;
 use App\Entity\Vinilo;
 use App\Repository\ArtistaRepository;
 use App\Repository\GeneroRepository;
+use App\Repository\PedidoRepository;
 use App\Repository\ViniloRepository;
 use App\Service\DiscogsService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -18,28 +20,109 @@ use Symfony\Component\Routing\Attribute\Route;
 class AdminController extends AbstractController
 {
     #[Route('/admin/panel', name: 'app_admin_panel')]
-    public function panel(ViniloRepository $viniloRepository, GeneroRepository $generoRepository, Request $request): Response
+    public function panel(ViniloRepository $viniloRepository, GeneroRepository $generoRepository, PedidoRepository $pedidoRepository, Request $request): Response
     {
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
 
         $busqueda = $request->query->get('busqueda', '');
         $generoFiltro = $request->query->get('genero', '');
 
+        // Filtros para pedidos
+        $filtroPedidoUsuario = $request->query->get('pedido_usuario', '');
+        $filtroPedidoVinilo = $request->query->get('pedido_vinilo', '');
+
         if ($busqueda || $generoFiltro) {
             $vinilos = $viniloRepository->findByFilters($busqueda, $generoFiltro, '', null, '');
         } else {
-            $vinilos = $viniloRepository->findAll();
+            $vinilos = $viniloRepository->findBy(['deletedAt' => null]);
         }
 
-        $novedades = $viniloRepository->findBy(['esNovedad' => true], ['fecha_lanzamiento' => 'DESC']);
+        $novedades = $viniloRepository->findBy(['esNovedad' => true, 'deletedAt' => null], ['fecha_lanzamiento' => 'DESC']);
         $generos = $generoRepository->findBy([], ['nombre' => 'ASC']);
+
+        // Lógica de filtrado de pedidos
+        $qbPedidos = $pedidoRepository->createQueryBuilder('p')
+            ->leftJoin('p.cliente', 'c')
+            ->leftJoin('p.detalles', 'd')
+            ->leftJoin('d.vinilo', 'v')
+            ->where('p.deletedAt IS NULL');
+
+        if ($filtroPedidoUsuario) {
+            $qbPedidos->andWhere('LOWER(c.nombre) LIKE LOWER(:usuario) OR LOWER(c.email) LIKE LOWER(:usuario)')
+                ->setParameter('usuario', '%' . $filtroPedidoUsuario . '%');
+        }
+
+        if ($filtroPedidoVinilo) {
+            $qbPedidos->andWhere('LOWER(v.titulo) LIKE LOWER(:vinilo)')
+                ->setParameter('vinilo', '%' . $filtroPedidoVinilo . '%');
+        }
+
+        $pedidos = $qbPedidos->orderBy('p.fecha', 'DESC')
+            ->getQuery()
+            ->getResult();
 
         return $this->render('admin/panel.html.twig', [
             'vinilos' => $vinilos,
             'novedades' => $novedades,
             'generos' => $generos,
+            'pedidos' => $pedidos,
             'busqueda' => $busqueda,
             'generoFiltro' => $generoFiltro,
+            'pedidoUsuarioFiltro' => $filtroPedidoUsuario,
+            'pedidoViniloFiltro' => $filtroPedidoVinilo,
+        ]);
+    }
+
+    #[Route('/admin/pedido/{id}/delete', name: 'app_admin_pedido_delete', methods: ['POST'])]
+    public function deletePedido(int $id, PedidoRepository $pedidoRepository, EntityManagerInterface $em, Request $request): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
+        if (!$this->isCsrfTokenValid('delete-pedido' . $id, $request->request->get('_token'))) {
+            $this->addFlash('error', 'Token CSRF inválido');
+            return $this->redirectToRoute('app_admin_panel');
+        }
+
+        $pedido = $pedidoRepository->find($id);
+        if (!$pedido) {
+            throw $this->createNotFoundException('Pedido no encontrado');
+        }
+
+        $pedido->setDeletedAt(new \DateTimeImmutable());
+        $em->flush();
+
+        $this->addFlash('success', 'Pedido eliminado (desactivado) correctamente');
+        return $this->redirectToRoute('app_admin_panel');
+    }
+
+    #[Route('/admin/pedido/{id}/edit', name: 'app_admin_pedido_edit', methods: ['GET', 'POST'])]
+    public function editPedido(int $id, Request $request, PedidoRepository $pedidoRepository, EntityManagerInterface $em): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
+        $pedido = $pedidoRepository->find($id);
+        if (!$pedido) {
+            throw $this->createNotFoundException('Pedido no encontrado');
+        }
+
+        if ($request->isMethod('POST')) {
+            if (!$this->isCsrfTokenValid('edit-pedido' . $id, $request->request->get('_token'))) {
+                $this->addFlash('error', 'Token CSRF inválido');
+                return $this->redirectToRoute('app_admin_panel');
+            }
+
+            $total = $request->request->get('total');
+            if ($total !== null) {
+                $pedido->setTotal((float)$total);
+            }
+
+            $em->flush();
+            $this->addFlash('success', 'Pedido actualizado correctamente');
+            return $this->redirectToRoute('app_admin_panel');
+        }
+
+        return $this->render('admin/edit_pedido.html.twig', [
+            'pedido' => $pedido,
         ]);
     }
 
@@ -109,10 +192,10 @@ class AdminController extends AbstractController
             throw $this->createNotFoundException('Vinilo no encontrado');
         }
 
-        $em->remove($vinilo);
+        $vinilo->setDeletedAt(new \DateTimeImmutable());
         $em->flush();
 
-        $this->addFlash('success', 'Vinilo eliminado correctamente');
+        $this->addFlash('success', 'Vinilo eliminado (desactivado) correctamente');
         return $this->redirectToRoute('app_admin_panel');
     }
 
@@ -142,7 +225,7 @@ class AdminController extends AbstractController
             if (!$vinilo) continue;
 
             if ($action === 'delete') {
-                $em->remove($vinilo);
+                $vinilo->setDeletedAt(new \DateTimeImmutable());
                 $count++;
             } elseif ($action === 'update') {
                 if ($precio !== null && $precio !== '') {
@@ -157,10 +240,10 @@ class AdminController extends AbstractController
 
         $em->flush();
 
-        $message = $action === 'delete' 
-            ? "$count vinilos eliminados" 
+        $message = $action === 'delete'
+            ? "$count vinilos eliminados"
             : "$count vinilos actualizados";
-        
+
         $this->addFlash('success', $message);
         return $this->redirectToRoute('app_admin_panel');
     }

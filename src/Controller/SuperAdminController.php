@@ -16,13 +16,13 @@ class SuperAdminController extends AbstractController
     public function panel(UsuarioRepository $usuarioRepository): Response
     {
         $this->denyAccessUnlessGranted('ROLE_SUPER_ADMIN');
-        
-        // Obtener todos los usuarios excepto SUPER_ADMIN
-        $todosUsuarios = $usuarioRepository->findAll();
+
+        // Obtener todos los usuarios activos excepto SUPER_ADMIN
+        $todosUsuarios = $usuarioRepository->findBy(['deletedAt' => null]);
         $usuarios = array_filter($todosUsuarios, function($usuario) {
             return !in_array('ROLE_SUPER_ADMIN', $usuario->getRoles());
         });
-        
+
         return $this->render('superadmin/panel.html.twig', [
             'usuarios' => $usuarios,
         ]);
@@ -32,7 +32,7 @@ class SuperAdminController extends AbstractController
     public function banUser(int $id, UsuarioRepository $usuarioRepository, EntityManagerInterface $em): Response
     {
         $this->denyAccessUnlessGranted('ROLE_SUPER_ADMIN');
-        
+
         $usuario = $usuarioRepository->find($id);
         if (!$usuario) {
             throw $this->createNotFoundException('Usuario no encontrado');
@@ -55,7 +55,7 @@ class SuperAdminController extends AbstractController
     public function unbanUser(int $id, UsuarioRepository $usuarioRepository, EntityManagerInterface $em): Response
     {
         $this->denyAccessUnlessGranted('ROLE_SUPER_ADMIN');
-        
+
         $usuario = $usuarioRepository->find($id);
         if (!$usuario) {
             throw $this->createNotFoundException('Usuario no encontrado');
@@ -73,7 +73,7 @@ class SuperAdminController extends AbstractController
     public function deleteUser(int $id, UsuarioRepository $usuarioRepository, EntityManagerInterface $em): Response
     {
         $this->denyAccessUnlessGranted('ROLE_SUPER_ADMIN');
-        
+
         $usuario = $usuarioRepository->find($id);
         if (!$usuario) {
             throw $this->createNotFoundException('Usuario no encontrado');
@@ -85,10 +85,10 @@ class SuperAdminController extends AbstractController
             return $this->redirectToRoute('app_superadmin_panel');
         }
 
-        $em->remove($usuario);
+        $usuario->setDeletedAt(new \DateTimeImmutable());
         $em->flush();
 
-        $this->addFlash('success', 'Usuario eliminado permanentemente');
+        $this->addFlash('success', 'Usuario desactivado correctamente');
         return $this->redirectToRoute('app_superadmin_panel');
     }
 
@@ -96,12 +96,12 @@ class SuperAdminController extends AbstractController
     public function toggleRole(int $id, string $role, Request $request, UsuarioRepository $usuarioRepository, EntityManagerInterface $em): Response
     {
         $this->denyAccessUnlessGranted('ROLE_SUPER_ADMIN');
-        
+
         // Validar CSRF token
         if (!$this->isCsrfTokenValid('toggle-role', $request->request->get('_token'))) {
             return $this->json(['error' => 'Token inválido'], 400);
         }
-        
+
         $usuario = $usuarioRepository->find($id);
         if (!$usuario) {
             return $this->json(['error' => 'Usuario no encontrado'], 404);
@@ -114,13 +114,13 @@ class SuperAdminController extends AbstractController
 
         $roles = $usuario->getRoles();
         $roleToToggle = 'ROLE_' . strtoupper($role);
-        
+
         if (in_array($roleToToggle, $roles)) {
             $roles = array_diff($roles, [$roleToToggle]);
         } else {
             $roles[] = $roleToToggle;
         }
-        
+
         $usuario->setRoles(array_values($roles));
         $em->flush();
 
@@ -157,7 +157,7 @@ class SuperAdminController extends AbstractController
                 $usuario->setDeleteAt(null);
                 $count++;
             } elseif ($action === 'delete') {
-                $em->remove($usuario);
+                $usuario->setDeletedAt(new \DateTimeImmutable());
                 $count++;
             }
         }
@@ -170,7 +170,7 @@ class SuperAdminController extends AbstractController
             'delete' => "$count usuarios eliminados permanentemente",
             default => "Acción completada"
         };
-        
+
         $this->addFlash('success', $message);
         return $this->redirectToRoute('app_superadmin_panel');
     }

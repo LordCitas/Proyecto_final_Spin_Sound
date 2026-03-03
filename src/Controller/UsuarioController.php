@@ -149,14 +149,18 @@ final class UsuarioController extends AbstractController
     public function delete(Request $request, Usuario $usuario, EntityManagerInterface $entityManager, Security $security): Response
     {
         if ($this->isCsrfTokenValid('delete'.$usuario->getId(), $request->getPayload()->getString('_token'))) {
-            $security->logout(false);
-            $entityManager->remove($usuario);
+            $usuario->setDeletedAt(new \DateTimeImmutable());
             $entityManager->flush();
-            $this->addFlash('success', 'Tu cuenta ha sido eliminada correctamente.');
-            return $this->redirectToRoute('app_home');
+            $this->addFlash('success', 'Tu cuenta ha sido desactivada correctamente.');
+
+            // Si el usuario que se está borrando es el mismo que está logueado, cerrar sesión
+            if ($this->getUser() === $usuario) {
+                $security->logout(false);
+                return $this->redirectToRoute('app_home');
+            }
         }
 
-        return $this->redirectToRoute('app_usuario_index', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('app_superadmin_panel', [], Response::HTTP_SEE_OTHER);
     }
 
     #[Route('/{id}/change-password', name: 'app_usuario_change_password', methods: ['POST'])]

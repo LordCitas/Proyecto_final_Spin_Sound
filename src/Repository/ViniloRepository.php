@@ -40,10 +40,11 @@ class ViniloRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('v')
             ->leftJoin('v.artistas', 'a')
             ->leftJoin('v.generos', 'g')
-            ->addSelect('a', 'g');
+            ->addSelect('a', 'g')
+            ->where('v.deletedAt IS NULL'); // Filtrar vinilos no borrados
 
         if ($query !== '') {
-            $qb->andWhere('LOWER(v.titulo) LIKE LOWER(:q) OR LOWER(a.nombre) LIKE LOWER(:q)')
+            $qb->andWhere('(LOWER(v.titulo) LIKE LOWER(:q) OR LOWER(a.nombre) LIKE LOWER(:q))')
                ->setParameter('q', '%' . $query . '%');
         }
 
